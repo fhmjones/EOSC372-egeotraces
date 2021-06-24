@@ -12,28 +12,6 @@ kernelspec:
   name: python3
 ---
 
-GA03
-
-+++
-
-![GA03_selection.jpg](attachment:GA03_selection.jpg)
-
-+++
-
-GP02
-
-+++
-
-![GA03_selection.jpg](attachment:GA03_selection.jpg)
-
-+++
-
-GIPY05
-
-+++
-
-![GIPY05_selection.jpg](attachment:GIPY05_selection.jpg)
-
 ```{code-cell} ipython3
 import matplotlib.pyplot as plt
 import pandas as pd
