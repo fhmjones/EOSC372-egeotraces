@@ -16,9 +16,10 @@ kernelspec:
 import matplotlib.pyplot as plt
 import pandas as pd
 
-GA03 = pd.read_csv("./data/GA03_w.csv")
-GIPY05 = pd.read_csv("./data/GIPY_05e.csv")
-GP02 = pd.read_csv("./data/GP02_w.csv")
+GA03 = pd.read_csv("./data/GA03w.csv")
+GIPY05 = pd.read_csv("./data/GIPY05e.csv")
+GP02 = pd.read_csv("./data/GP02w.csv")
+GIPY04 = pd.read_csv("./data/GIPY04.csv")
 
 GA03_stations = GA03['Station']
 GA03_lat = GA03['Latitude [degrees_north]']
@@ -46,6 +47,15 @@ GP02_temp = GP02['CTDTMP [deg C]']
 GP02_salinity = GP02['CTDSAL']
 GP02_nitrate = GP02['NO2+NO3_D_CONC_BOTTLE [umol/kg]']
 GP02_iron = GP02['Fe_D_CONC_BOTTLE [nmol/kg]']
+
+GIPY04_stations = GIPY04['Station']
+GIPY04_lat = GIPY04['Latitude [degrees_north]']
+GIPY04_lon = GIPY04['Longitude [degrees_east]']
+GIPY04_depth = GIPY04['DEPTH [m]']
+GIPY04_temp = GIPY04['CTDTMP [deg C]']
+GIPY04_salinity = GIPY04['CTDSAL']
+GIPY04_nitrate = GIPY04['NITRATE_D_CONC_BOTTLE [umol/kg]']
+GIPY04_iron = GIPY04['Fe_D_CONC_BOTTLE [nmol/kg]']
 
 
 #'DEPTH [m]'
@@ -90,17 +100,20 @@ for i in range(len(GIPY05_lat)):
     if (GIPY05_lat[i] <= -65):
         if len(all_B_stations) == 0 or all_B_stations[-1] != GIPY05_stations[i]:
             all_B_stations.append(GIPY05_stations[i])
-A_stations = all_A_stations
+A_stations = [all_A_stations[i] for i in (1, 3, 4, 5)]
 B_stations = [all_B_stations[i] for i in (10,16,24,26)]
 
 #Temperature
 plt.rcParams['figure.figsize'] = [15, 5]
 plt.subplot(1, 2, 1)
-plt.scatter(GIPY05_temp[GIPY05_lat >= -45], GIPY05_depth[GIPY05_lat >= -45])
+for s in A_stations:
+    plt.scatter(GIPY05_temp[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
 plt.xlabel("Temperature")
 plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -110,15 +123,19 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('south of 65S')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Nitrate
 plt.subplot(1, 2, 1)
-plt.scatter(GIPY05_nitrate[GIPY05_lat >= -45], GIPY05_depth[GIPY05_lat >= -45])
+for s in A_stations:
+    plt.scatter(GIPY05_nitrate[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
 plt.xlabel("Nitrate")
 plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -128,15 +145,19 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('south of 65S')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Iron
 plt.subplot(1, 2, 1)
-plt.scatter(GIPY05_iron[GIPY05_lat >= -45], GIPY05_depth[GIPY05_lat >= -45])
+for s in A_stations:
+    plt.scatter(GIPY05_iron[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
 plt.xlabel("Iron")
 plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -146,15 +167,19 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('south of 65S')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Salinity
 plt.subplot(1, 2, 1)
-plt.scatter(GIPY05_salinity[GIPY05_lat >= -45], GIPY05_depth[GIPY05_lat >= -45])
+for s in A_stations:
+    plt.scatter(GIPY05_salinity[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
 plt.xlabel("Salinity")
 plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -164,6 +189,135 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('south of 65S')
 plt.legend()
+plt.gca().invert_yaxis()
+plt.show()
+
+plt.tight_layout()
+```
+
+```{code-cell} ipython3
+### GIPY05
+#A: 4 depth profiles north of 45S #3 profiles from GIPY04
+#B: 4 depth profiles south of 65S
+
+
+#Get all stations in desired ranges
+all_A_stations_04 = []
+all_A_stations_05 = []
+all_B_stations = []
+for i in range(len(GIPY05_lat)):
+    if (GIPY05_lat[i] >= -45):
+        if len(all_A_stations_05) == 0 or all_A_stations_05[-1] != GIPY05_stations[i]:
+            all_A_stations_05.append(GIPY05_stations[i])
+    if (GIPY05_lat[i] <= -65):
+        if len(all_B_stations) == 0 or all_B_stations[-1] != GIPY05_stations[i]:
+            all_B_stations.append(GIPY05_stations[i])
+for i in range(len(GIPY04_lat)):
+    if (GIPY04_lat[i] >= -45) & (GIPY04_lat[i] <= -35):
+        if len(all_A_stations_04) == 0 or all_A_stations_04[-1] != GIPY04_stations[i]:
+            all_A_stations_04.append(GIPY04_stations[i])
+            
+A_stations_05 = [all_A_stations_05[4]]
+A_stations_04 = [all_A_stations_04[i] for i in (5,18,21)]
+B_stations = [all_B_stations[i] for i in (10,16,24,26)]
+
+
+
+#Temperature
+plt.rcParams['figure.figsize'] = [15, 5]
+plt.subplot(1, 2, 1)
+for s in A_stations_05:
+    plt.scatter(GIPY05_temp[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+for s in A_stations_04:
+    plt.scatter(GIPY04_temp[GIPY04_stations == s], GIPY04_depth[GIPY04_stations == s], label=s)
+plt.xlabel("Temperature")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
+
+plt.subplot(1, 2, 2)
+for s in B_stations:
+    plt.scatter(GIPY05_temp[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+plt.xlabel("Temperature")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('south of 65S')
+plt.legend()
+plt.gca().invert_yaxis()
+plt.show()
+
+#Nitrate
+plt.subplot(1, 2, 1)
+for s in A_stations_05:
+    plt.scatter(GIPY05_nitrate[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+for s in A_stations_04:
+    plt.scatter(GIPY04_nitrate[GIPY04_stations == s], GIPY04_depth[GIPY04_stations == s], label=s)
+plt.xlabel("Nitrate")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
+
+plt.subplot(1, 2, 2)
+for s in B_stations:
+    plt.scatter(GIPY05_nitrate[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+plt.xlabel("Nitrate")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('south of 65S')
+plt.legend()
+plt.gca().invert_yaxis()
+plt.show()
+
+#Iron
+plt.subplot(1, 2, 1)
+for s in A_stations_05:
+    plt.scatter(GIPY05_iron[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+for s in A_stations_04:
+    plt.scatter(GIPY04_iron[GIPY04_stations == s], GIPY04_depth[GIPY04_stations == s], label=s)
+plt.xlabel("Iron")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
+
+plt.subplot(1, 2, 2)
+for s in B_stations:
+    plt.scatter(GIPY05_iron[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+plt.xlabel("Iron")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('south of 65S')
+plt.legend()
+plt.gca().invert_yaxis()
+plt.show()
+
+#Salinity
+plt.subplot(1, 2, 1)
+for s in A_stations_05:
+    plt.scatter(GIPY05_salinity[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+for s in A_stations_04:
+    plt.scatter(GIPY04_salinity[GIPY04_stations == s], GIPY04_depth[GIPY04_stations == s], label=s)
+plt.xlabel("Salinity")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('north of 45S')
+plt.legend()
+plt.gca().invert_yaxis()
+
+plt.subplot(1, 2, 2)
+for s in B_stations:
+    plt.scatter(GIPY05_salinity[GIPY05_stations == s], GIPY05_depth[GIPY05_stations == s], label=s)
+plt.xlabel("Salinity")
+plt.ylabel("Depth (m)")
+plt.ylim([0, 500])
+plt.title('south of 65S')
+plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 plt.tight_layout()
@@ -200,6 +354,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('60-65W')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -209,6 +364,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('0-25W')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Nitrate
@@ -220,6 +376,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('60-65W')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -229,6 +386,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('0-25W')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Iron
@@ -240,6 +398,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('60-65W')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -249,6 +408,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('0-25W')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Salinity
@@ -260,6 +420,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('60-65W')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -269,6 +430,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('0-25W')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 plt.tight_layout()
@@ -302,6 +464,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('East side (<155E)')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -311,6 +474,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('West side (>180E)')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Nitrate
@@ -322,6 +486,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('East side (<155E)')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -331,6 +496,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('West side (>180E)')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Iron
@@ -342,6 +508,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('East side (<155E)')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -351,6 +518,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('West side (>180E)')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 #Salinity
@@ -362,6 +530,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.legend()
 plt.title('East side (<155E)')
+plt.gca().invert_yaxis()
 
 plt.subplot(1, 2, 2)
 for s in B_stations:
@@ -371,6 +540,7 @@ plt.ylabel("Depth (m)")
 plt.ylim([0, 500])
 plt.title('West side (>180E)')
 plt.legend()
+plt.gca().invert_yaxis()
 plt.show()
 
 plt.tight_layout()
