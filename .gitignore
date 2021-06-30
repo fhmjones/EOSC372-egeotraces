@@ -1,5 +1,6 @@
 .ipynb_checkpoints
 *.ipynb
 full_data
-images
+Assignment_egeotraces/images
 ocese-tasks-eosc372.docx
+MappedData-DemoApp01

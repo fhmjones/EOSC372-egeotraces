@@ -1,0 +1,23 @@
+Total Number of Records             12.,,,,,
+             DATA SET: https://data.pmel.noaa.gov/pmel/thredds/dodsC/data/PMEL/WOA05nc/monthly/n0112an1.nc,,,,,
+             World Ocean Atlas 2005,,,,,
+             X: 0.5 to 12.5,,,,,
+ Column  1: DATETIME is Time String,,,,,
+ Column  2: TIME is Time Coordinates (days since 01-JAN-0000 00:00:00)   BAD FLAG : -1.E+34,,,,,
+ Column  3: LON is Longitude (degrees_east)   BAD FLAG : -1.E+34,,,,,
+ Column  4: LAT is Latitude (degrees_north)   BAD FLAG : -1.E+34,,,,,
+ Column  5: DEP is depth (m)   BAD FLAG : -1.E+34,,,,,
+ Column  6: N0112AN1 is Nitrate (uM)   BAD FLAG : -1.E+34,,,,,
+DATETIME,TIME,LON,LAT,DEP,N0112AN1
+2021-01-15,380.242,-40.5,19.5,10,0.3564
+2021-02-13,409.242,-40.5,19.5,10,0.1901
+2021-03-14,438.742,-40.5,19.5,10,0.3259
+2021-04-14,469.242,-40.5,19.5,10,0.412
+2021-05-14,499.742,-40.5,19.5,10,0.3626
+2021-06-14,530.242,-40.5,19.5,10,0.4162
+2021-07-14,560.742,-40.5,19.5,10,0.45
+2021-08-14,591.742,-40.5,19.5,10,0.3434
+2021-09-14,622.242,-40.5,19.5,10,0.5201
+2021-10-14,652.742,-40.5,19.5,10,0.3833
+2021-11-14,683.742,-40.5,19.5,10,0.3922
+2021-12-15,714.242,-40.5,19.5,10,0.3701
