@@ -256,7 +256,8 @@ def update_tgraph(hov_data, click_data, cruise):
     annot_lat = f'Lat: {lat:4.4f}N'
     annot_long = f'Lon: {lon:4.4f}E'
 
-    figT = px.scatter(x=xvals, y=yvals, title='Temperature')
+    figT = px.scatter(x=xvals, y=yvals)
+    figT.update_layout(title_text='Temperature', title_x=0.75)
     figT.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
     figT.update_xaxes(range=[-5, 35], title="deg. C.")
     figT.update_yaxes(range=[500, 0], title="Depth (m)")
@@ -291,7 +292,8 @@ def update_sgraph(hov_data, click_data, cruise):
 
     xvals, yvals = get_x_y_values(cruise, lat, lon, 'Salinity')
 
-    figS = px.scatter(x=xvals, y=yvals, title='Salinity')
+    figS = px.scatter(x=xvals, y=yvals)
+    figS.update_layout(title_text='Salinity', title_x=0.55)
     figS.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
     figS.update_xaxes(range=[32, 37], title="")
     figS.update_yaxes(range=[500, 0], title="Depth (m)")
@@ -317,7 +319,8 @@ def update_ngraph(hov_data, click_data, cruise):
 
     xvals, yvals = get_x_y_values(cruise, lat, lon, 'Nitrate')
 
-    figN = px.scatter(x=xvals, y=yvals, title='Nitrate')
+    figN = px.scatter(x=xvals, y=yvals)
+    figN.update_layout(title_text='Nitrate', title_x=0.55)
     figN.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
     figN.update_xaxes(range=[0, 45], title="")
     figN.update_yaxes(range=[500, 0], title="Depth (m)")
@@ -343,7 +346,8 @@ def update_igraph(hov_data, click_data, cruise):
 
     xvals, yvals = get_x_y_values(cruise, lat, lon, 'Iron')
 
-    figI = px.scatter(x=xvals, y=yvals, title='Iron')
+    figI = px.scatter(x=xvals, y=yvals)
+    figI.update_layout(title_text='Iron', title_x=0.55)
     figI.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
     figI.update_xaxes(range=[0, 2], title="")
     figI.update_yaxes(range=[500, 0], title="Depth (m)")
@@ -391,14 +395,14 @@ def update_map(color_checkbox, background, cruise, click_data):
 
     if cruise == 'GIPY0405':
         fig = px.scatter_mapbox(GIPY0405, lat="Latitude", lon="Longitude", hover_name="Station",
-                                color_discrete_sequence=[dotcolor],
-                                zoom=1.2, center=dict(lat=-50, lon=0))
+                                color_discrete_sequence=[dotcolor], zoom=1.2, center=dict(lat=-50, lon=0))
     elif cruise == 'GA03':
         fig = px.scatter_mapbox(GA03, lat="Latitude", lon="Longitude", hover_name="Station", color_discrete_sequence=[dotcolor],
                                 zoom=1.2)
     elif cruise == 'GP02':
         fig = px.scatter_mapbox(GP02, lat="Latitude", lon="Longitude", hover_name="Station", color_discrete_sequence=[dotcolor],
                                 zoom=1.2)
+
     if (click_data is None) | (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'): #determines which of the inputs was changed
         initialize_cruise(fig, cruise) #initializes the click for the new cruise
     else:
@@ -428,8 +432,7 @@ def update_map(color_checkbox, background, cruise, click_data):
                  }
             ])
 
-    fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0},
-                      title=cruise)  # use "t":30 to put map below controls if they were there.
+    fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
     return fig
 
 

@@ -34,7 +34,7 @@ GIPY05_stations = GIPY05['Station']
 GIPY05_lat = GIPY05['Latitude [degrees_north]']
 GIPY05_lon = GIPY05['Longitude [degrees_east]']
 GIPY05_depth = GIPY05['DEPTH [m]']
-GIPY05_tempm = GIPY05['CTDTMP [deg C]']
+GIPY05_temp = GIPY05['CTDTMP [deg C]']
 GIPY05_salinity = GIPY05['CTDSAL']
 GIPY05_nitrate = GIPY05['NO2+NO3_D_CONC_BOTTLE [umol/kg]']
 GIPY05_iron = GIPY05['Fe_D_CONC_BOTTLE [nmol/kg]']
@@ -294,10 +294,6 @@ plot_GP02_profile(GP02_iron, "Iron")
 plot_GP02_profile(GP02_salinity, "Salinity")
 
 plt.tight_layout()
-```
-
-```{code-cell} ipython3
-
 ```
 
 ```{code-cell} ipython3
