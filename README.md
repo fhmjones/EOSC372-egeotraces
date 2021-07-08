@@ -1,1 +1,1 @@
-# EOSC372
+Creating a new assignment for EOSC372 using Dash. This assignment uses data collected from the GEOTRACES cruises data source.

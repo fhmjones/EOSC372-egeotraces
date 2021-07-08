@@ -8,10 +8,6 @@
 # Mapmaking code initially learned from https://plotly.com/python/mapbox-layers/.
 
 
-# map doesn't update right for GIPY05
-#layout of plots
-#layout of buttons
-
 from flask import Flask
 from os import environ
 
@@ -20,6 +16,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import plotly.express as px
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from dash.dependencies import Input, Output
 import pandas as pd
 
@@ -109,11 +106,9 @@ app.layout = html.Div([
     ], style={'width': '40%', 'display': 'inline-block', 'vertical-align': 'middle'}),
 
 
-    # two side-by-side data plots
-    # these have reduced interactivity to simplify the look and feel
     html.Div([
         dcc.Graph(
-            id='temperature',
+            id='subplots',
             config={
                 'staticPlot': False,  # True, False
                 'scrollZoom': False,  # True, False
@@ -126,55 +121,8 @@ app.layout = html.Div([
                                            'autoScale2d'],
             }
         ),
-    ], style={'display': 'inline-block', 'width': '25%'}),
-    html.Div([
-        dcc.Graph(
-            id='salinity',
-            config={
-                'staticPlot': False,  # True, False
-                'scrollZoom': False,  # True, False
-                'doubleClick': 'reset',  # 'reset', 'autosize' or 'reset+autosize', False
-                'showTips': True,  # True, False
-                'displayModeBar': 'hover',  # True, False, 'hover'
-                'watermark': False,
-                'modeBarButtonsToRemove': ['resetAxis', 'pan2d', 'resetScale2d', 'select2d', 'lasso2d', 'zoom2d',
-                                           'zoomIn2d', 'zoomOut2d', 'hoverCompareCartesian', 'hoverClosestCartesian',
-                                           'autoScale2d'],
-            }
-        ),
-    ], style={'display': 'inline-block', 'width': '25%'}),
-    html.Div([
-        dcc.Graph(
-            id='nitrate',
-            config={
-                'staticPlot': False,  # True, False
-                'scrollZoom': False,  # True, False
-                'doubleClick': 'reset',  # 'reset', 'autosize' or 'reset+autosize', False
-                'showTips': True,  # True, False
-                'displayModeBar': 'hover',  # True, False, 'hover'
-                'watermark': False,
-                'modeBarButtonsToRemove': ['resetAxis', 'pan2d', 'resetScale2d', 'select2d', 'lasso2d', 'zoom2d',
-                                           'zoomIn2d', 'zoomOut2d', 'hoverCompareCartesian', 'hoverClosestCartesian',
-                                           'autoScale2d'],
-            }
-        ),
-    ], style={'display': 'inline-block', 'width': '25%'}),
-    html.Div([
-        dcc.Graph(
-            id='iron',
-            config={
-                'staticPlot': False,  # True, False
-                'scrollZoom': False,  # True, False
-                'doubleClick': 'reset',  # 'reset', 'autosize' or 'reset+autosize', False
-                'showTips': True,  # True, False
-                'displayModeBar': 'hover',  # True, False, 'hover'
-                'watermark': False,
-                'modeBarButtonsToRemove': ['resetAxis', 'pan2d', 'resetScale2d', 'select2d', 'lasso2d', 'zoom2d',
-                                           'zoomIn2d', 'zoomOut2d', 'hoverCompareCartesian', 'hoverClosestCartesian',
-                                           'autoScale2d'],
-            }
-        ),
-    ], style={'display': 'inline-block', 'width': '25%'}),
+    ], style={'display': 'inline-block', 'width': '100%'}),
+    ###here
 
     dcc.Markdown('''
         ----
@@ -190,8 +138,6 @@ app.layout = html.Div([
 
         ''')
 ], style={'width': '1000px'})
-
-
 
 
 
@@ -235,14 +181,58 @@ def get_x_y_values(cruise, lat, lon, data_name):
         yvals = GP02['Depth'][(GP02['Latitude'] == lat) & (GP02['Longitude'] == lon)]
     return [xvals, yvals]
 
-# Temperature graph based on "hovering" over location on the map
+#initialize the subplots
+def initialize_subplots():
+    fig = make_subplots(rows=1, cols=4, subplot_titles=("Temperature", "Salinity", "Nitrate", "Iron"))
+
+    cruise = 'GIPY0405'
+    lat, lon = get_click_lat_lon_values(None, cruise, False)
+
+    xvals_temp, yvals_temp = get_x_y_values(cruise, lat, lon, 'Temperature')
+    xvals_sal, yvals_sal = get_x_y_values(cruise, lat, lon, 'Salinity')
+    xvals_nit, yvals_nit = get_x_y_values(cruise, lat, lon, 'Nitrate')
+    xvals_iron, yvals_iron = get_x_y_values(cruise, lat, lon, 'Iron')
+
+    figT = px.scatter(x=xvals_temp, y=yvals_temp)
+    figS = px.scatter(x=xvals_sal, y=yvals_sal)
+    figN = px.scatter(x=xvals_nit, y=yvals_nit)
+    figI = px.scatter(x=xvals_iron, y=yvals_iron)
+
+    fig.add_trace(figT.data[0], row=1, col=1)
+    fig.add_trace(figS.data[0], row=1, col=2)
+    fig.add_trace(figN.data[0], row=1, col=3)
+    fig.add_trace(figI.data[0], row=1, col=4)
+
+    fig.update_yaxes(range=[500, 0])
+
+    #customize temp plot
+    fig.update_xaxes(title_text='deg C', range=[-5, 35], row=1, col=1)
+    fig.update_yaxes(title_text='Depth (m)', row=1, col=1)
+    fig.update_layout(xaxis=dict(side='top'), xaxis2=dict(side='top'), xaxis3=dict(side='top'), xaxis4=dict(side='top'))
+    fig.update_annotations(yshift=-410)
+    fig.update_layout(margin={'l': 0, 'b': 30, 'r': 0, 't': 30})
+
+    #customize sal plot
+    fig.update_xaxes(title_text='', range=[32, 37], row=1, col=2)
+
+    # customize nit plot
+    fig.update_xaxes(title_text="umol/kg", range=[0, 45], row=1, col=3)
+
+    # customize iron plot
+    fig.update_xaxes(title_text="nmol/kg", range=[0, 2], row=1, col=4)
+
+    return fig
+
+fig = initialize_subplots()
+
+#Suplot graph
 @app.callback(
-    Output(component_id='temperature', component_property='figure'),
+    Output(component_id='subplots', component_property='figure'),
     Input(component_id='map', component_property='hoverData'),
     Input(component_id='map', component_property='clickData'),
     Input(component_id='cruise', component_property='value')
 )
-def update_tgraph(hov_data, click_data, cruise):
+def update_subplots(hov_data, click_data, cruise):
     if hov_data != None:
         lat, lon = get_hov_lat_lon_values(hov_data, cruise)
     else:
@@ -251,108 +241,19 @@ def update_tgraph(hov_data, click_data, cruise):
         else:
             lat, lon = get_click_lat_lon_values(click_data, cruise, False)
 
-    xvals, yvals = get_x_y_values(cruise, lat, lon, 'Temperature')
+    xvals_temp, yvals_temp = get_x_y_values(cruise, lat, lon, 'Temperature')
+    xvals_sal, yvals_sal = get_x_y_values(cruise, lat, lon, 'Salinity')
+    xvals_nit, yvals_nit = get_x_y_values(cruise, lat, lon, 'Nitrate')
+    xvals_iron, yvals_iron = get_x_y_values(cruise, lat, lon, 'Iron')
 
-    annot_lat = f'Lat: {lat:4.4f}N'
-    annot_long = f'Lon: {lon:4.4f}E'
+    fig.data[0].update(x=xvals_temp, y=yvals_temp)
+    fig.data[1].update(x=xvals_sal, y=yvals_sal)
+    fig.data[2].update(x=xvals_nit, y=yvals_nit)
+    fig.data[3].update(x=xvals_iron, y=yvals_iron)
 
-    figT = px.scatter(x=xvals, y=yvals)
-    figT.update_layout(title_text='Temperature', title_x=0.75)
-    figT.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
-    figT.update_xaxes(range=[-5, 35], title="deg. C.")
-    figT.update_yaxes(range=[500, 0], title="Depth (m)")
-
-    # this puts location information at bottom right of the temperature graph
-    # better than making it a title since positioning is more versatile
-    # there are no doubt other ways of adding this information
-    figT.add_annotation(text=annot_lat,
-                        xref="paper", yref="paper",  # Google this annotation function for explanation of "paper"
-                        x=.14, y=.1, showarrow=False)
-    figT.add_annotation(text=annot_long,
-                        xref="paper", yref="paper",
-                        x=.14, y=.05, showarrow=False)
-    return figT
+    return fig
 
 
-# Salinity graph based on "hovering" over location on the map
-@app.callback(
-    Output(component_id='salinity', component_property='figure'),
-    Input(component_id='map', component_property='hoverData'),
-    Input(component_id='map', component_property='clickData'),
-    Input(component_id='cruise', component_property='value')
-)
-def update_sgraph(hov_data, click_data, cruise):
-    if hov_data != None:
-        lat, lon = get_hov_lat_lon_values(hov_data, cruise)
-    else:
-        if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-            lat, lon = get_click_lat_lon_values(click_data, cruise, True)
-        else:
-            lat, lon = get_click_lat_lon_values(click_data, cruise, False)
-
-    xvals, yvals = get_x_y_values(cruise, lat, lon, 'Salinity')
-
-    figS = px.scatter(x=xvals, y=yvals)
-    figS.update_layout(title_text='Salinity', title_x=0.55)
-    figS.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
-    figS.update_xaxes(range=[32, 37], title="")
-    figS.update_yaxes(range=[500, 0], title="Depth (m)")
-
-    return figS
-
-
-# Nitrate graph based on "hovering" over location on the map
-@app.callback(
-    Output(component_id='nitrate', component_property='figure'),
-    Input(component_id='map', component_property='hoverData'),
-    Input(component_id='map', component_property='clickData'),
-    Input(component_id='cruise', component_property='value')
-)
-def update_ngraph(hov_data, click_data, cruise):
-    if hov_data != None:
-        lat, lon = get_hov_lat_lon_values(hov_data, cruise)
-    else:
-        if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-            lat, lon = get_click_lat_lon_values(click_data, cruise, True)
-        else:
-            lat, lon = get_click_lat_lon_values(click_data, cruise, False)
-
-    xvals, yvals = get_x_y_values(cruise, lat, lon, 'Nitrate')
-
-    figN = px.scatter(x=xvals, y=yvals)
-    figN.update_layout(title_text='Nitrate', title_x=0.55)
-    figN.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
-    figN.update_xaxes(range=[0, 45], title="")
-    figN.update_yaxes(range=[500, 0], title="Depth (m)")
-
-    return figN
-
-
-# Iron graph based on "hovering" over location on the map
-@app.callback(
-    Output(component_id='iron', component_property='figure'),
-    Input(component_id='map', component_property='hoverData'),
-    Input(component_id='map', component_property='clickData'),
-    Input(component_id='cruise', component_property='value')
-)
-def update_igraph(hov_data, click_data, cruise):
-    if hov_data != None:
-        lat, lon = get_hov_lat_lon_values(hov_data, cruise)
-    else:
-        if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-            lat, lon = get_click_lat_lon_values(click_data, cruise, True)
-        else:
-            lat, lon = get_click_lat_lon_values(click_data, cruise, False)
-
-    xvals, yvals = get_x_y_values(cruise, lat, lon, 'Iron')
-
-    figI = px.scatter(x=xvals, y=yvals)
-    figI.update_layout(title_text='Iron', title_x=0.55)
-    figI.update_layout(margin={'l': 0, 'b': 0, 'r': 20, 't': 40})
-    figI.update_xaxes(range=[0, 2], title="")
-    figI.update_yaxes(range=[500, 0], title="Depth (m)")
-
-    return figI
 
 
 def initialize_cruise(fig, cruise):
