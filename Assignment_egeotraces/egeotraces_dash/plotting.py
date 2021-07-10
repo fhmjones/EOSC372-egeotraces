@@ -10,28 +10,24 @@ GA03 = pd.read_csv("GA03_filtered.csv")
 GP02 = pd.read_csv("GP02_filtered.csv")
 GIPY0405 = pd.concat([GIPY04, GIPY05], ignore_index=True)
 
-
-hov_lat = None
-hov_lon = None
-hov_station = None
-click_lat = None
-click_lon = None
-click_station = None
-
+#global variables to keep track of the hovered and clicked stations for plotting
+hov_lat, hov_lon, hov_station = None, None, None
+click_lat, click_lon, click_station = None, None, None
 
 ###SUBPLOTS PLOTTING
 #helper functions
 #get lat and lons from hoverData
-def get_hov_lat_lon_values(hov_data, cruise):
-    global hov_lat, hov_lon, hov_station
-    lat = hov_data['points'][0]['lat']
-    lon = hov_data['points'][0]['lon']
-    hov_lat, hov_lon = lat, lon
-    #str(hov_data['points'][0]['hovertext'])
-    return [lat, lon]
+def set_hov_lat_lon_values(hov_data, cruise):
+    global hov_lat, hov_lon, hov_station, click_station
+    hov_lat = hov_data['points'][0]['lat']
+    hov_lon = hov_data['points'][0]['lon']
+    if 'hovertext' in hov_data['points'][0]:
+        hov_station = str(hov_data['points'][0]['hovertext'])
+    else:
+        hov_station = click_station
 
 #get lat and lons from clickData
-def get_click_lat_lon_values(click_data, cruise, new_cruise):
+def set_click_lat_lon_values(click_data, cruise, new_cruise):
     global click_lat, click_lon, click_station
     if (click_data is None) or (new_cruise == True):  # necessary for startup before interacting with the map.
         if cruise == 'GIPY0405':
@@ -46,13 +42,18 @@ def get_click_lat_lon_values(click_data, cruise, new_cruise):
             lat = GP02['Latitude'][0]
             lon = GP02['Longitude'][0]
             station = GP02['Station'][0]
+    # when you click on a point that is already clicked, the hovertext is not in the click_data dict
+    # in that case, we keep the click_lat, lon and station the same
+    elif 'hovertext' not in click_data['points'][0]:
+        lat = click_lat
+        lon = click_lon
+        station = click_station
     else:
         lat = click_data['points'][0]['lat']
         lon = click_data['points'][0]['lon']
         station = str(click_data['points'][0]['hovertext'])
 
     click_lat, click_lon, click_station = lat, lon, station
-    return [lat, lon]
 
 def get_x_y_values(cruise, lat, lon, data_name):
     if cruise == 'GIPY0405':
@@ -68,11 +69,12 @@ def get_x_y_values(cruise, lat, lon, data_name):
 
 #figure functions
 #initialize the subplots
-def initialize_subplots():
+def initialize_subplots(cruise):
+    global click_lat, click_lon, click_station
     fig = make_subplots(rows=1, cols=4, subplot_titles=("Temperature", "Salinity", "Nitrate", "Iron"))
 
-    cruise = 'GIPY0405'
-    lat, lon = get_click_lat_lon_values(None, cruise, False)
+    set_click_lat_lon_values(None, cruise, False)
+    lat, lon = click_lat, click_lon
 
     xvals_temp, yvals_temp = get_x_y_values(cruise, lat, lon, 'Temperature')
     xvals_sal, yvals_sal = get_x_y_values(cruise, lat, lon, 'Salinity')
@@ -114,12 +116,18 @@ def initialize_subplots():
     # customize iron plot
     fig.update_xaxes(title_text="nmol/kg", range=[0, 2], row=1, col=4)
 
+    if click_lat is not None and click_lon is not None:
+        fig['data'][0]['showlegend'] = True
+        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
+        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
+
     return fig
 
 def switch_subplots(hov_data, click_data, cruise, fig):
     global hov_lat, hov_lon, hov_station
     global click_lat, click_lon, click_station
-    lat, lon = get_click_lat_lon_values(click_data, cruise, True)
+    set_click_lat_lon_values(click_data, cruise, True)
+    lat, lon = click_lat, click_lon
 
     xvals_temp, yvals_temp = get_x_y_values(cruise, lat, lon, 'Temperature')
     xvals_sal, yvals_sal = get_x_y_values(cruise, lat, lon, 'Salinity')
@@ -141,13 +149,9 @@ def switch_subplots(hov_data, click_data, cruise, fig):
 
 
     #display cruise info
-    if hov_lat is not None and hov_lon is not None:
-        fig['data'][4]['showlegend'] = True
-        fig['data'][0]['name'] = '<br>lat: ' + str(hov_lat) + '<br>lon: ' + str(hov_lon)
-        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
-    if click_data is not None:
+    if click_lat is not None and click_lon is not None:
         fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str(click_lat) + '<br>lon: ' + str(click_lon)
+        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
         fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
 
 
@@ -157,7 +161,7 @@ def update_subplots(hov_data, click_data, cruise, fig):
     global click_lat, click_lon, click_station
     global hov_lat, hov_lon, hov_station
     if hov_data != None:
-        lat, lon = get_hov_lat_lon_values(hov_data, cruise) # change to set
+        set_hov_lat_lon_values(hov_data, cruise)
 
         hov_xvals_temp, hov_yvals_temp = get_x_y_values(cruise, hov_lat, hov_lon, 'Temperature')
         hov_xvals_sal, hov_yvals_sal = get_x_y_values(cruise, hov_lat, hov_lon, 'Salinity')
@@ -176,7 +180,7 @@ def update_subplots(hov_data, click_data, cruise, fig):
         fig.data[7].update(x=[], y=[])
 
     if click_data != None:
-        lat, lon = get_click_lat_lon_values(click_data, cruise, False)
+        set_click_lat_lon_values(click_data, cruise, False)
 
         click_xvals_temp, click_yvals_temp = get_x_y_values(cruise, click_lat, click_lon, 'Temperature')
         click_xvals_sal, click_yvals_sal = get_x_y_values(cruise, click_lat, click_lon, 'Salinity')
@@ -190,9 +194,13 @@ def update_subplots(hov_data, click_data, cruise, fig):
 
 
     #display cruise info
+    if hov_lat is not None and hov_lon is not None:
+        fig['data'][4]['showlegend'] = True
+        fig['data'][4]['name'] = str(hov_station) + '<br>lat: ' + str("{:.2f}".format(hov_lat)) + '<br>lon: ' + str("{:.2f}".format(hov_lon))
+        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
     if click_data is not None:
         fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(click_data['points'][0]['hovertext']) + '<br>lat: ' + str(lat) + '<br>lon: ' + str(lon)
+        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
         fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
 
     return fig
@@ -232,6 +240,12 @@ def update_background(background, fig):
 
 #initializes click marker for map
 def map_initialize_cruise(fig, cruise):
+    global click_lat, click_lon, click_station
+    set_click_lat_lon_values(None, cruise, False)
+    fig.add_trace(go.Scattermapbox(lat=[click_lat], lon=[click_lon], showlegend=False, hovertemplate="<b>" + str(click_station) +
+                                     "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
+                                   mode='markers', marker=go.scattermapbox.Marker(size=10, color='rgb(255, 0, 0)')))
+    '''
     if cruise == 'GIPY0405':
         fig.add_trace(go.Scattermapbox(lat=[GIPY0405['Latitude'][0]], lon=[GIPY0405['Longitude'][0]],
                                        showlegend=False,
@@ -250,6 +264,7 @@ def map_initialize_cruise(fig, cruise):
                                        hovertemplate="<b>" + GP02['Station'][
                                            0] + "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
                                        mode='markers', marker=go.scattermapbox.Marker(size=10, color='rgb(255, 0, 0)')))
+   '''
 
     return fig
 
@@ -298,6 +313,7 @@ def switch_map(color_checkbox, background, cruise, fig):
 
 
 def update_map(color_checkbox, background, click_data, cruise, fig):
+    global click_lat, click_lon, click_station
     # Dot color, map type and map zoom are interactive.
     # code from https://plotly.com/python/mapbox-layers/ without the "fig.show".
     dotcolor = get_dotcolor(color_checkbox)
@@ -306,9 +322,9 @@ def update_map(color_checkbox, background, click_data, cruise, fig):
     fig = plot_stations(dotcolor, cruise)
 
     # adding markers from: https://plotly.com/python/scattermapbox/
-    if click_data is not None:
-        fig.add_trace(go.Scattermapbox(lat=[click_data['points'][0]['lat']], lon=[click_data['points'][0]['lon']], showlegend=False,
-                                       hovertemplate = "<b>" + click_data['points'][0]['hovertext'] + "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
+    if click_lat is not None and click_lon is not None:
+        fig.add_trace(go.Scattermapbox(lat=[click_lat], lon=[click_lon], showlegend=False, hovertemplate = "<b>" + click_station +
+                                       "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
                                        mode='markers', marker=go.scattermapbox.Marker(size=10, color='rgb(255, 0, 0)')))
     else:
         fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise

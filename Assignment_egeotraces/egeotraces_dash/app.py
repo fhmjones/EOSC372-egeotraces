@@ -154,8 +154,8 @@ app.layout = html.Div([
 
 #using the plotting import to plot the figures
 
-fig_subplots = plot.initialize_subplots()
 fig_map = plot.initialize_map(initial_color_checkbox, initial_background, initial_cruise)
+fig_subplots = plot.initialize_subplots(initial_cruise)
 
 #Suplot graph
 @app.callback(
