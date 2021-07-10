@@ -10,11 +10,6 @@ import pandas as pd
 # 'Fe_D_CONC_BOTTLE [nmol/kg]', 'Fe_D_CONC_FISH [nmol/kg]', 'Fe_II_D_CONC_BOTTLE [nmol/kg]', 'Fe_II_D_CONC_FISH [nmol/kg]',
 # 'Fe_S_CONC_BOTTLE [nmol/kg]', 'Fe_S_CONC_FISH [nmol/kg]'
 
-# notes on which data was chosen and why
-
-# sort by depth?
-# put filtered data in a folder?
-
 
 # read in original data
 GA03_data = pd.read_csv("./data/GA03w.csv")
@@ -33,12 +28,16 @@ GA03 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GA03 = GA03[((GA03.Longitude <= 360 - 60) & (GA03.Longitude >= 360 - 65)) | (GA03.Longitude >= 360 - 25)]
 positions = []
+#stations = []
 for i in range(len(GA03)):
+        #station = GA03['Station'].values[i]
         lat = GA03['Latitude'].values[i]
         lon = GA03['Longitude'].values[i]
         if len(positions) == 0 or [lat, lon] != positions[-1]:
                 positions.append([lat, lon])
-for i in [0, 6]: #choosing specific profiles
+                #stations.append(station)
+#print(stations)
+for i in [0, 1, 6]: #choosing specific profiles
         GA03 = GA03.drop(GA03[(GA03.Latitude == positions[i][0]) & (GA03.Longitude == positions[i][1])].index)
 GA03.to_csv('GA03_filtered.csv', index=False)
 
@@ -95,15 +94,15 @@ GIPY04 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GIPY04 = GIPY04[(GIPY04.Latitude >= -45) | (GIPY05.Latitude <= -35)]
 positions = []
-stations = []
+#stations = []
 for i in range(len(GIPY04)):
-        station = GIPY04['Station'].values[i]
+        #station = GIPY04['Station'].values[i]
         lat = GIPY04['Latitude'].values[i]
         lon = GIPY04['Longitude'].values[i]
         if len(positions) == 0 or [lat, lon] != positions[-1]:
             positions.append([lat, lon])
-            stations.append(station)
-print(stations)
-for i in [0,1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,19,20,21,22,23,24,25,26,27,28,29,30,32,33,35,36,37,38,39,40,42,43,44,45,46,47,48,50,51,52,53]: #choosing specific profiles
+            #stations.append(station)
+#print(stations)
+for i in [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,35,36,37,38,39,40,42,43,44,45,46,47,48,49,50,51,52,53]: #choosing specific profiles
         GIPY04 = GIPY04.drop(GIPY04[(GIPY04.Latitude == positions[i][0]) & (GIPY04.Longitude == positions[i][1])].index)
 GIPY04.to_csv('GIPY04_filtered.csv', index=False)
