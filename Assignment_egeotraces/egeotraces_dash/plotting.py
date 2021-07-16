@@ -34,6 +34,7 @@ def set_hov_lat_lon_values(hov_data):
 def set_click_lat_lon_values(click_data, cruise, new_cruise):
     global click_lat, click_lon, click_station
     if (click_data is None) or (new_cruise == True):  # necessary for startup before interacting with the map.
+        #print(cruise)
         if cruise == 'GIPY0405':
             lat = GIPY0405['Latitude'][0]
             lon = GIPY0405['Longitude'][0]
@@ -290,7 +291,10 @@ def initialize_map(color_checkbox, background, cruise):
     fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
 
     fig = update_background(background, fig)
-    fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+    if cruise == 'GIPY0405':
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+    else:
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
 
     return fig
 
@@ -306,7 +310,10 @@ def switch_map(color_checkbox, background, cruise, fig):
 
     update_background(background, fig)
 
-    fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+    if cruise == 'GIPY0405':
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+    else:
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
 
     return fig
 
@@ -327,5 +334,8 @@ def update_map(color_checkbox, background, click_data, cruise, fig):
     else:
         fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
     fig = update_background(background, fig)
-    fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+    if cruise == 'GIPY0405':
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+    else:
+        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
     return fig

@@ -125,7 +125,7 @@ data = [GIPY04_data['Station'], GIPY04_data['Latitude [degrees_north]'], GIPY04_
         GIPY04_data['Fe_D_CONC_BOTTLE [nmol/kg]']]
 GIPY04 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
-GIPY04 = GIPY04[(GIPY04.Latitude >= -45) | (GIPY05.Latitude <= -35)]
+GIPY04 = GIPY04[(GIPY04.Latitude >= -45)]
 GIPY04 = average_data(GIPY04)
 add_ratio_data(GIPY04)
 GIPY04 = remove_empty_data(GIPY04)
@@ -139,6 +139,6 @@ for i in range(len(GIPY04)):
             positions.append([lat, lon])
             stations.append(station)
 #print(stations)
-for i in [2, 4]: #choosing specific profiles
+for i in [0, 2, 4]: #choosing specific profiles
         GIPY04 = GIPY04.drop(GIPY04[(GIPY04.Latitude == positions[i][0]) & (GIPY04.Longitude == positions[i][1])].index)
 GIPY04.to_csv('GIPY04_filtered.csv', index=False)

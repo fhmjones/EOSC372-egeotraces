@@ -48,9 +48,11 @@ app.layout = html.Div([
         
         #### Instructions  
         
-        - Mouse-over a station (dots) will plot the corresponding temperature, salinity, nitrate, and iron profiles.  
+        - Hover over a station (dots on the map) to plot the corresponding temperature, salinity, nitrate, and iron profiles in blue.
+        - Click on a station to make a fixed plot of the depth profiles in red.  
         - Mouse wheel zooms within the map.  
-        - Map background and station dot color can be adjusted with checkboxes.      
+        - Map background and station dot color can be adjusted with checkboxes.
+        - The cruise can be changed with radiobuttons.      
         - The depth profiles can be saved as a figure which students could submit with an assignment.   
 
         ----------
