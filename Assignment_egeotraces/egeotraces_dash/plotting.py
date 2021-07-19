@@ -353,7 +353,7 @@ def update_map(color_checkbox, background, click_data, figure_data, cruise, fig)
     # code from https://plotly.com/python/mapbox-layers/ without the "fig.show".
     dotcolor = get_dotcolor(color_checkbox)
     fig = plot_stations(dotcolor, cruise)
-    if figure_data is not None:
+    if figure_data is not None: #set map layout to its previous settings, so the zoom and position doesn't reset
         fig.layout['mapbox'] = figure_data['layout']['mapbox']
 
     # adding markers from: https://plotly.com/python/scattermapbox/

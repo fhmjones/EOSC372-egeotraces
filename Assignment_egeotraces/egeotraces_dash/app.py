@@ -73,7 +73,7 @@ app.layout = html.Div([
                 'watermark': True,
                 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d'],
             },
-            clear_on_unhover = True,
+            #clear_on_unhover = True,
         )
     ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20', 'vertical-align': 'middle', 'margin-bottom': 30, 'margin-right': 50, 'margin-left': 20}),
 
