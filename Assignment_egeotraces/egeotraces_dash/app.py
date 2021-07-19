@@ -16,13 +16,9 @@ import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
 
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import pandas as pd
-
 import plotting as plot
 
+#initial settings for the plots
 initial_color_checkbox = ['blue']
 initial_background = ['plain']
 initial_cruise = 'GIPY0405'
@@ -60,7 +56,7 @@ app.layout = html.Div([
         ----------
         '''),
 
-# the map with location points
+# plot with the map of cruise stations
     html.Div([
         dcc.Graph(
             id='map',
@@ -73,7 +69,7 @@ app.layout = html.Div([
                 'watermark': True,
                 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d'],
             },
-            #clear_on_unhover = True,
+            #clear_on_unhover = True, #clears hover plots when cursor isn't over the station
         )
     ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20', 'vertical-align': 'middle', 'margin-bottom': 30, 'margin-right': 50, 'margin-left': 20}),
 
@@ -88,7 +84,7 @@ app.layout = html.Div([
         **Select Cruise**
         '''),
 
-        dcc.RadioItems(
+        dcc.RadioItems( #radiobuttons to choose the current cruise
             id='cruise',
             options=[
                 {'label': 'GIPY04 and GIPY05', 'value': 'GIPY0405'},
@@ -124,7 +120,7 @@ app.layout = html.Div([
         dcc.Markdown('''
             **Select x-axis fit**
         '''),
-        dcc.RadioItems(
+        dcc.RadioItems( #radiobuttons to select either a default x-axis range, or to fit to the data
             id='x_range',
             options=[
                 {'label': 'default', 'value': 'default'},
@@ -142,8 +138,11 @@ app.layout = html.Div([
     ], style={'display': 'inline-block', 'width': '5%', 'vertical-align': 'middle', 'textAlign': 'center'}),
 
     html.Div([
-
         dcc.RangeSlider(
+            # slider to select the y-axis range
+            # range slider documentation: https://dash.plotly.com/dash-core-components/rangeslider
+            # note: I couldn't find a way to put the "max" value on the bottom of the slider (to flip the slider vertically)
+            # so I made the slider go from -500 to 0, and I take the absolute value of the range later
             id='y_range',
             min=-500,
             max=0,
@@ -159,8 +158,9 @@ app.layout = html.Div([
     ], style={'display': 'inline-block', 'width': '2%', 'vertical-align': 'middle'}),
 
     html.Div([
+        # the graph of subplots which show depth profiles for different parameters
         dcc.Graph(
-            id='subplots',
+            id='profiles',
             config={
                 'staticPlot': False,  # True, False
                 'scrollZoom': False,  # True, False
@@ -193,27 +193,30 @@ app.layout = html.Div([
 
 
 
-#using the plotting import to plot the figures
+#using the plotting file to plot the figures
 
+#initialize the map and the depth profiles
 fig_map = plot.initialize_map(initial_color_checkbox, initial_background, initial_cruise)
-fig_subplots = plot.initialize_subplots(initial_cruise, initial_x_range, initial_y_range)
+fig_profiles = plot.initialize_profiles(initial_cruise, initial_x_range, initial_y_range)
 
 #Suplot graph
 @app.callback(
-    Output(component_id='subplots', component_property='figure'),
+    Output(component_id='profiles', component_property='figure'),
     Input(component_id='map', component_property='hoverData'),
     Input(component_id='map', component_property='clickData'),
     Input(component_id='cruise', component_property='value'),
     Input(component_id='x_range', component_property='value'),
     Input(component_id='y_range', component_property='value')
 )
-def update_subplots(hov_data, click_data, cruise, x_range, y_range):
+def update_profiles(hov_data, click_data, cruise, x_range, y_range):
     y_range[0] = abs(y_range[0])
     y_range[1] = abs(y_range[1])
+    # if the callback that was triggered was the cruise changing, we switch profiles (switch cruises)
+    # otherwise, we update the profiles for the current cruise
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-        fig = plot.switch_subplots(hov_data, click_data, cruise, fig_subplots, x_range, y_range)
+        fig = plot.switch_profiles(click_data, cruise, fig_profiles, x_range, y_range)
     else:
-        fig = plot.update_subplots(hov_data, click_data, cruise, fig_subplots, x_range, y_range)
+        fig = plot.update_profiles(hov_data, click_data, cruise, fig_profiles, x_range, y_range)
     return fig
 
 
@@ -228,6 +231,7 @@ def update_subplots(hov_data, click_data, cruise, x_range, y_range):
     Input('map', 'figure')
 )
 def update_map(color_checkbox, background, cruise, click_data, figure_data):
+    # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(color_checkbox, background, cruise, fig_map)
     else:
