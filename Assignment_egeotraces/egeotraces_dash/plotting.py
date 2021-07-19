@@ -346,13 +346,15 @@ def switch_map(color_checkbox, background, cruise, fig):
     return fig
 
 
-def update_map(color_checkbox, background, click_data, cruise, fig):
+def update_map(color_checkbox, background, click_data, figure_data, cruise, fig):
     global click_lat, click_lon, click_station
+
     # Dot color, map type and map zoom are interactive.
     # code from https://plotly.com/python/mapbox-layers/ without the "fig.show".
     dotcolor = get_dotcolor(color_checkbox)
-
     fig = plot_stations(dotcolor, cruise)
+    if figure_data is not None:
+        fig.layout['mapbox'] = figure_data['layout']['mapbox']
 
     # adding markers from: https://plotly.com/python/scattermapbox/
     if click_lat is not None and click_lon is not None:

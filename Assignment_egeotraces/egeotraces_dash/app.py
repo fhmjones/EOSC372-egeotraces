@@ -224,13 +224,14 @@ def update_subplots(hov_data, click_data, cruise, x_range, y_range):
     Input('color_checkbox', 'value'),
     Input('background', 'value'),
     Input('cruise', 'value'),
-    Input('map', 'clickData')
+    Input('map', 'clickData'),
+    Input('map', 'figure')
 )
-def update_map(color_checkbox, background, cruise, click_data):
+def update_map(color_checkbox, background, cruise, click_data, figure_data):
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(color_checkbox, background, cruise, fig_map)
     else:
-        fig = plot.update_map(color_checkbox, background, click_data, cruise, fig_map)
+        fig = plot.update_map(color_checkbox, background, click_data, figure_data, cruise, fig_map)
     return fig
 
 
