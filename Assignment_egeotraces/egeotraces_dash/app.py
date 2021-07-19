@@ -27,6 +27,7 @@ initial_color_checkbox = ['blue']
 initial_background = ['plain']
 initial_cruise = 'GIPY0405'
 initial_y_range = [0, 500]
+initial_x_range = 'default'
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -94,12 +95,13 @@ app.layout = html.Div([
                 {'label': 'GA03', 'value': 'GA03'},
                 {'label': 'GP02', 'value': 'GP02'}
             ],
-            value=initial_cruise
+            value=initial_cruise,
+            style={"margin-bottom": "30px"}
         ),
 
         dcc.Markdown('''
-            **Select point colour, map type & size**
-        '''),
+            **Select point colour and map type**
+        ''',),
         # switch between plain or satellite view for the map
         dcc.Checklist(
             id='background',
@@ -117,7 +119,19 @@ app.layout = html.Div([
             ],
             value=initial_color_checkbox,
             labelStyle={'margin-bottom': 30}
-        )
+        ),
+
+        dcc.Markdown('''
+            **Select x-axis fit**
+        '''),
+        dcc.RadioItems(
+            id='x_range',
+            options=[
+                {'label': 'default', 'value': 'default'},
+                {'label': 'fit to data', 'value': 'fitted'},
+            ],
+            value=initial_x_range
+        ),
 
     ], style={'width': '40%', 'display': 'inline-block', 'vertical-align': 'middle'}),
 
@@ -134,20 +148,15 @@ app.layout = html.Div([
             min=-500,
             max=0,
             step=0.5,
+            #adding ticks to the slider without having labels
             marks={
-                0: '',#'0',
-                -100: '',#'100',
-                -200: '',#'200',
-                -300: '',#'300',
-                -400: '',#'400',
-                -500: '',#'500',
-
+                0: '', -100: '', -200: '', -300: '', -400: '', -500: '',
             },
             value=[-500, 0],
             vertical=True,
             verticalHeight=360
         )
-    ], style={'display': 'inline-block', 'width': '3%', 'vertical-align': 'middle'}),
+    ], style={'display': 'inline-block', 'width': '2%', 'vertical-align': 'middle'}),
 
     html.Div([
         dcc.Graph(
@@ -164,7 +173,7 @@ app.layout = html.Div([
                                            'autoScale2d'],
             }
         ),
-    ], style={'display': 'inline-block', 'width': '90%', 'vertical-align': 'middle'}),
+    ], style={'display': 'inline-block', 'width': '93%', 'vertical-align': 'middle'}),
 
 
     dcc.Markdown('''
@@ -187,7 +196,7 @@ app.layout = html.Div([
 #using the plotting import to plot the figures
 
 fig_map = plot.initialize_map(initial_color_checkbox, initial_background, initial_cruise)
-fig_subplots = plot.initialize_subplots(initial_cruise, initial_y_range)
+fig_subplots = plot.initialize_subplots(initial_cruise, initial_x_range, initial_y_range)
 
 #Suplot graph
 @app.callback(
@@ -195,15 +204,16 @@ fig_subplots = plot.initialize_subplots(initial_cruise, initial_y_range)
     Input(component_id='map', component_property='hoverData'),
     Input(component_id='map', component_property='clickData'),
     Input(component_id='cruise', component_property='value'),
+    Input(component_id='x_range', component_property='value'),
     Input(component_id='y_range', component_property='value')
 )
-def update_subplots(hov_data, click_data, cruise, y_range):
+def update_subplots(hov_data, click_data, cruise, x_range, y_range):
     y_range[0] = abs(y_range[0])
     y_range[1] = abs(y_range[1])
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-        fig = plot.switch_subplots(hov_data, click_data, cruise, fig_subplots, y_range)
+        fig = plot.switch_subplots(hov_data, click_data, cruise, fig_subplots, x_range, y_range)
     else:
-        fig = plot.update_subplots(hov_data, click_data, cruise, fig_subplots, y_range)
+        fig = plot.update_subplots(hov_data, click_data, cruise, fig_subplots, x_range, y_range)
     return fig
 
 

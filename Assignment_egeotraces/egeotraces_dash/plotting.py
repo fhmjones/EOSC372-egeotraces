@@ -72,9 +72,34 @@ def get_x_y_values(cruise, lat, lon, data_name):
         yvals = GP02['Depth'][(GP02['Latitude'] == lat) & (GP02['Longitude'] == lon)]
     return [xvals, yvals]
 
+def update_x_range(fig, x_range, cruise):
+    if x_range == 'default':
+        fig.update_xaxes(autorange=False)
+        if cruise == 'GIPY0405':
+            fig.update_xaxes(range=[-5, 25], row=1, col=1)
+            fig.update_xaxes(range=[-1000, 1000 * 650], row=1, col=5)
+        elif cruise == 'GA03':
+            fig.update_xaxes(range=[5, 35], row=1, col=1)
+            fig.update_xaxes(range=[-1000, 1000 * 50], row=1, col=5)
+        elif cruise == 'GP02':
+            fig.update_xaxes(range=[0, 30], row=1, col=1)
+            fig.update_xaxes(range=[-1000, 1000 * 250], row=1, col=5)
+        fig.update_xaxes(range=[30, 37], row=1, col=2)
+        fig.update_xaxes(range=[-2, 45], row=1, col=3)
+        fig.update_xaxes(range=[-0.1, 2], row=1, col=4)
+    elif x_range == 'fitted':
+        fig.update_xaxes(autorange=True)
+        #fig.update_xaxes(range=None, row=1, col=1)
+        #fig.update_xaxes(range=None, row=1, col=2)
+        #fig.update_xaxes(range=None, row=1, col=3)
+        #fig.update_xaxes(range=None, row=1, col=4)
+    fig.update_xaxes(nticks=3)
+    return fig
+
+
 #figure functions
 #initialize the subplots
-def initialize_subplots(cruise, y_range):
+def initialize_subplots(cruise, x_range, y_range):
     global click_lat, click_lon, click_station
     fig = make_subplots(rows=1, cols=5, subplot_titles=("Temperature", "Salinity", "Nitrate", "Iron", "Nitrate:Iron"))
 
@@ -122,11 +147,13 @@ def initialize_subplots(cruise, y_range):
     #fig.update_yaxes(title_text='Depth (m)', row=1, col=1)
     #fig.update_yaxes(visible=False, row=1, col=1)
     #customize x axes
-    fig.update_xaxes(title_text='deg C', range=[-5, 35], row=1, col=1)
-    fig.update_xaxes(title_text='Practical Salinity', range=[30, 37], row=1, col=2)
-    fig.update_xaxes(title_text="umol/kg", range=[-2, 45], row=1, col=3)
-    fig.update_xaxes(title_text="nmol/kg", range=[-0.1, 2], row=1, col=4)
+    fig.update_xaxes(title_text='deg C', row=1, col=1)
+    fig.update_xaxes(title_text='Practical Salinity', row=1, col=2)
+    fig.update_xaxes(title_text="umol/kg", row=1, col=3)
+    fig.update_xaxes(title_text="nmol/kg", row=1, col=4)
     fig.update_xaxes(title_text="", range=[-1000, 1000*650], row=1, col=5)
+
+    fig = update_x_range(fig, x_range, cruise)
 
     if click_lat is not None and click_lon is not None:
         fig['data'][0]['showlegend'] = True
@@ -135,7 +162,7 @@ def initialize_subplots(cruise, y_range):
 
     return fig
 
-def switch_subplots(hov_data, click_data, cruise, fig, y_range):
+def switch_subplots(hov_data, click_data, cruise, fig, x_range, y_range):
     global hov_lat, hov_lon, hov_station
     global click_lat, click_lon, click_station
     set_click_lat_lon_values(click_data, cruise, True)
@@ -157,15 +184,7 @@ def switch_subplots(hov_data, click_data, cruise, fig, y_range):
     fig.update_yaxes(range=y_range)
 
     #update xlims for temp based on cruise
-    if cruise == 'GIPY0405':
-        fig.update_xaxes(range=[-5, 25], row=1, col=1)
-        fig.update_xaxes(range=[-1000, 1000*650], row=1, col=5)
-    elif cruise == 'GA03':
-        fig.update_xaxes(range=[5, 35], row=1, col=1)
-        fig.update_xaxes(range=[-1000, 1000*50], row=1, col=5)
-    elif cruise == 'GP02':
-        fig.update_xaxes(range=[0, 30], row=1, col=1)
-        fig.update_xaxes(range=[-1000, 1000*250], row=1, col=5)
+    fig = update_x_range(fig, x_range, cruise)
 
     #display cruise info
     if click_lat is not None and click_lon is not None:
@@ -176,7 +195,7 @@ def switch_subplots(hov_data, click_data, cruise, fig, y_range):
 
     return fig
 
-def update_subplots(hov_data, click_data, cruise, fig, y_range):
+def update_subplots(hov_data, click_data, cruise, fig, x_range, y_range):
     global click_lat, click_lon, click_station
     global hov_lat, hov_lon, hov_station
     if hov_data != None:
@@ -227,6 +246,8 @@ def update_subplots(hov_data, click_data, cruise, fig, y_range):
         fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
         fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
 
+    #update xlim
+    fig = update_x_range(fig, x_range, cruise)
     #update ylim
     fig.update_yaxes(range=y_range)
 

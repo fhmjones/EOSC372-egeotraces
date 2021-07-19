@@ -24,7 +24,6 @@ def remove_empty_data(cruise_data):
                         cruise_data = cruise_data.drop(grouped_data.get_group(name).index)
         return cruise_data
 
-
 #add data for [Nitrate] : [Fe] or [Nitrate]/[Fe]
 def add_ratio_data(cruise_data):
         nit = cruise_data['Nitrate']
@@ -53,6 +52,7 @@ GA03 = GA03[((GA03.Longitude <= 360 - 60) & (GA03.Longitude >= 360 - 65)) | (GA0
 GA03 = average_data(GA03)
 add_ratio_data(GA03)
 GA03 = remove_empty_data(GA03)
+GA03 = GA03[(GA03.Depth <= 500)]
 
 stations = []
 positions = []
@@ -79,6 +79,8 @@ GIPY05 = GIPY05[(GIPY05.Latitude >= -45) | (GIPY05.Latitude <= -65)]
 GIPY05 = average_data(GIPY05)
 add_ratio_data(GIPY05)
 GIPY05 = remove_empty_data(GIPY05)
+GIPY05 = GIPY05[(GIPY05.Depth <= 500)]
+
 positions = []
 stations = []
 for i in range(len(GIPY05)):
@@ -104,6 +106,8 @@ GP02 = GP02[(GP02.Longitude <= 155) | (GP02.Longitude >= 180)]
 GP02 = average_data(GP02)
 add_ratio_data(GP02)
 GP02 = remove_empty_data(GP02)
+GP02 = GP02[(GP02.Depth <= 500)]
+
 positions = []
 stations = []
 for i in range(len(GP02)):
@@ -129,6 +133,8 @@ GIPY04 = GIPY04[(GIPY04.Latitude >= -45)]
 GIPY04 = average_data(GIPY04)
 add_ratio_data(GIPY04)
 GIPY04 = remove_empty_data(GIPY04)
+GIPY04 = GIPY04[(GIPY04.Depth <= 500)]
+
 positions = []
 stations = []
 for i in range(len(GIPY04)):
