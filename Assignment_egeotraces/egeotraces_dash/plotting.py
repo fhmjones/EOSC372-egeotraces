@@ -77,26 +77,41 @@ def update_x_range(fig, x_range, cruise):
     #updating the x-axis range for the subplots
     if x_range == 'default':
         fig.update_xaxes(autorange=False)
-        #adjusting the x-axis for temperature based on the cruise
+        #adjusting the x-axis for temperature, ratio, density based on the cruise
         if cruise == 'GIPY0405':
-            fig.update_xaxes(range=[-5, 25], row=1, col=1)
-            fig.update_xaxes(range=[-1000, 1000 * 650], row=1, col=5)
+            fig.update_xaxes(range=[-5, 25], row=1, col=1) #temp
+            fig.update_xaxes(range=[-10000, 1000 * 650], row=1, col=5) #ratio
+            fig.update_xaxes(range=[24, 28], row=1, col=6)  # density
         elif cruise == 'GA03':
-            fig.update_xaxes(range=[5, 35], row=1, col=1)
-            fig.update_xaxes(range=[-1000, 1000 * 50], row=1, col=5)
+            fig.update_xaxes(range=[5, 35], row=1, col=1) #temp
+            fig.update_xaxes(range=[-10000, 1000 * 50], row=1, col=5) #ratio
+            fig.update_xaxes(range=[22, 28], row=1, col=6)  # density
         elif cruise == 'GP02':
-            fig.update_xaxes(range=[0, 30], row=1, col=1)
-            fig.update_xaxes(range=[-1000, 1000 * 250], row=1, col=5)
+            fig.update_xaxes(range=[0, 30], row=1, col=1) #temp
+            fig.update_xaxes(range=[-10000, 1000 * 250], row=1, col=5) #ratio
+            fig.update_xaxes(range=[21, 28], row=1, col=6)  # density
         fig.update_xaxes(range=[30, 37], row=1, col=2) #salinity
         fig.update_xaxes(range=[-2, 45], row=1, col=3) #nitrate
         fig.update_xaxes(range=[-0.1, 2], row=1, col=4) #iron
-        fig.update_xaxes(range = [-1000, 1000 * 650], row=1, col=5)  #ratio
-        fig.update_xaxes(range=[20, 30], row=1, col=6)  # density
     elif x_range == 'fitted':
         fig.update_xaxes(autorange=True) #letting plotly select the x-range for 'fitted' data
     fig.update_xaxes(nticks=3) #limiting the number of x-axis ticks so the plots don't change height
     return fig
 
+def update_legend(fig, data_type, cruise):
+    if data_type == 'click':
+        if click_lat is not None and click_lon is not None:
+            fig['data'][0]['showlegend'] = True
+            fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
+    elif data_type == 'hover':
+        if hov_lat is not None and hov_lon is not None:
+            fig['data'][6]['showlegend'] = True
+            fig['data'][6]['name'] = str(hov_station) + '<br>lat: ' + str("{:.2f}".format(hov_lat)) + '<br>lon: ' + str("{:.2f}".format(hov_lon))
+    if cruise == 'GIPY0405':
+        fig.update_layout(legend_title_text='<b>' + 'GIPY04 & GIPY05' + '</b>' + '<br></br>Selected Stations:')
+    else:
+        fig.update_layout(legend_title_text='<b>' + str(cruise) + '</b>' + '<br></br>Selected Stations:')
+    return fig
 
 #initialize the profiles
 def initialize_profiles(cruise, x_range, y_range):
@@ -159,11 +174,7 @@ def initialize_profiles(cruise, x_range, y_range):
     fig.update_xaxes(title_text="", row=1, col=6)
 
     fig = update_x_range(fig, x_range, cruise)
-
-    if click_lat is not None and click_lon is not None:
-        fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
-        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
+    fig = update_legend(fig, 'click', cruise)
 
     return fig
 
@@ -202,10 +213,7 @@ def switch_profiles(click_data, cruise, fig, x_range, y_range):
     fig = update_x_range(fig, x_range, cruise)
 
     #display cruise info
-    if click_lat is not None and click_lon is not None:
-        fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
-        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
+    fig = update_legend(fig, 'click', cruise)
 
 
     return fig
@@ -257,14 +265,8 @@ def update_profiles(hov_data, click_data, cruise, fig, x_range, y_range):
 
 
     #display cruise info
-    if hov_lat is not None and hov_lon is not None:
-        fig['data'][6]['showlegend'] = True
-        fig['data'][6]['name'] = str(hov_station) + '<br>lat: ' + str("{:.2f}".format(hov_lat)) + '<br>lon: ' + str("{:.2f}".format(hov_lon))
-        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
-    if click_data is not None:
-        fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(click_station) + '<br>lat: ' + str("{:.2f}".format(click_lat)) + '<br>lon: ' + str("{:.2f}".format(click_lon))
-        fig.update_layout(legend_title_text='Selected Stations from ' + str(cruise))
+    fig = update_legend(fig, 'click', cruise)
+    fig = update_legend(fig, 'hover', cruise)
 
     #update xlim
     fig = update_x_range(fig, x_range, cruise)
