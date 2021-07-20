@@ -14,11 +14,13 @@ The desired depth profiles are as follows:
 ### Data Collection
 - The data is collected [here](https://www.egeotraces.org/) for the following parameters: nitrate, iron, salinity, temperature.
 - The ratio of [nitrate] to [iron] is calculated from this data and added to the csv files.
+- Density is calculated from salinity and temperature.
 - The desired latitudes and longitudes of data are selected from the csv files.
 - Stations which have no iron data are removed from the csv files.
 ### Plotting the Data
-- The Dash shows a map of the stations for the chosen cruise. Hovering over the stations produces the depth profiles (temperature, salinity, nitrate, iron, ratio of nitrate to iron) on subplots below. Clicking on a station creates fixed depth profiles on the subplots below. 
+- The Dash shows a map of the stations for the chosen cruise. Hovering over the stations produces the depth profiles (temperature, salinity, nitrate, iron, ratio of nitrate to iron, density) on subplots below. Clicking on a station creates fixed depth profiles on the subplots below. 
 - The subplots show the depth profiles from 0 to 500m depth. This can be adjusted with a slider to the left of the subplots. 
 - The type of map (satellite or not) and dot colour can be changed. There are radiobuttons to select a cruise to plot.
+- The x-axis range can be changed by radiobuttons. 'default' selects a constant x-axis, and 'fit to data' chooses an x-axis for the current plot.
 - The subplots can be saved as a png file to submit.
 
