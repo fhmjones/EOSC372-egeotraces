@@ -19,8 +19,6 @@ from dash.dependencies import Input, Output
 import plotting as plot
 
 #initial settings for the plots
-initial_color_checkbox = ['blue']
-initial_background = ['plain']
 initial_cruise = 'GIPY0405'
 initial_y_range = [0, 500]
 initial_x_range = 'default'
@@ -38,11 +36,6 @@ app = dash.Dash(
 app.layout = html.Div([
     dcc.Markdown('''
         ### EOSC 372 GEOTRACES Assignment
-
-        #### Learning Goals
-        
-        1. ...
-        2. ... 
         
         #### Instructions  
         
@@ -95,27 +88,6 @@ app.layout = html.Div([
             style={"margin-bottom": "30px"}
         ),
 
-        dcc.Markdown('''
-            **Select point colour and map type**
-        ''',),
-        # switch between plain or satellite view for the map
-        dcc.Checklist(
-            id='background',
-            options=[
-                {'label': 'Satellite (from USGS)', 'value': 'satellite'}
-            ],
-            value=initial_background
-        ),
-
-        # change colour to be more visible on satellite.
-        dcc.Checklist(
-            id='color_checkbox',
-            options=[
-                {'label': 'change dot color', 'value': 'fuscia'}
-            ],
-            value=initial_color_checkbox,
-            labelStyle={'margin-bottom': 30}
-        ),
 
         dcc.Markdown('''
             **Select x-axis fit**
@@ -179,13 +151,9 @@ app.layout = html.Div([
     dcc.Markdown('''
         ----
 
-        ### Questions for students
-
-        To be added when an actual oceanography dashboard is created.
-
         ### Attributions
  
-        - **Code by:** J. Byer, adapted from code by F. Jones at https://github.com/fhmjones/MappedData-DemoApp01
+        - **Code by:** Code by: J. Byer for UBC's [OCESE project](https://www.eoas.ubc.ca/education/current-major-initiatives/ocese).
         - **Oceanography Data from:** Schlitzer, R., Anderson, R. F., Masferrer Dodas, E, et al., The GEOTRACES Intermediate Data Product 2017, Chem. Geol. (2018), https://doi.org/10.1016/j.chemgeo.2018.05.040.
 
         ''')
@@ -196,7 +164,7 @@ app.layout = html.Div([
 #using the plotting file to plot the figures
 
 #initialize the map and the depth profiles
-fig_map = plot.initialize_map(initial_color_checkbox, initial_background, initial_cruise)
+fig_map = plot.initialize_map(initial_cruise)
 fig_profiles = plot.initialize_profiles(initial_cruise, initial_x_range, initial_y_range)
 
 #Suplot graph
@@ -224,18 +192,16 @@ def update_profiles(hov_data, click_data, cruise, x_range, y_range):
 # The callback function with it's app.callback wrapper.
 @app.callback(
     Output('map', 'figure'),
-    Input('color_checkbox', 'value'),
-    Input('background', 'value'),
     Input('cruise', 'value'),
     Input('map', 'clickData'),
     Input('map', 'figure')
 )
-def update_map(color_checkbox, background, cruise, click_data, figure_data):
+def update_map(cruise, click_data, figure_data):
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-        fig = plot.switch_map(color_checkbox, background, cruise, fig_map)
+        fig = plot.switch_map(cruise, fig_map)
     else:
-        fig = plot.update_map(color_checkbox, background, click_data, figure_data, cruise, fig_map)
+        fig = plot.update_map(click_data, figure_data, cruise, fig_map)
     return fig
 
 

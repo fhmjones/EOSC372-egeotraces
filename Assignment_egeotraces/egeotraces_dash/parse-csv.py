@@ -38,9 +38,13 @@ def add_ratio_data(cruise_data):
 
 def add_density_data(cruise_data):
     #from: http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html
-    salinity = cruise_data['Salinity']
+    practical_salinity = cruise_data['Salinity']
+    pressure = cruise_data['Pressure']
+    longitude = cruise_data['Longitude']
+    latitude = cruise_data['Latitude']
+    absolute_salinity = gsw.SA_from_SP(practical_salinity, pressure, longitude, latitude)
     temperature = cruise_data['Temperature']
-    sigma0 = gsw.sigma0(salinity, temperature)
+    sigma0 = gsw.sigma0(absolute_salinity, temperature)
 
     cruise_data['Density'] = sigma0
 
@@ -51,12 +55,12 @@ GIPY05_data = pd.read_csv("./data/GIPY05e.csv")
 GP02_data = pd.read_csv("./data/GP02w.csv")
 GIPY04_data = pd.read_csv("./data/GIPY04.csv")
 
-headers = ['Station', 'Latitude', 'Longitude', 'Depth', 'Temperature', 'Salinity', 'Nitrate', 'Iron']
+headers = ['Station', 'Latitude', 'Longitude', 'Depth', 'Temperature', 'Salinity', 'Nitrate', 'Iron', 'Pressure']
 
 # make GA03 dataframe and csv
 data = [GA03_data['Station'], GA03_data['Latitude [degrees_north]'], GA03_data['Longitude [degrees_east]'],
         GA03_data['DEPTH [m]'], GA03_data['CTDTMP [deg C]'], GA03_data['CTDSAL'], GA03_data['NITRATE_D_CONC_BOTTLE [umol/kg]'],
-        GA03_data['Fe_D_CONC_BOTTLE [nmol/kg]']]
+        GA03_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GA03_data['PRESSURE [dbar]']]
 GA03 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GA03 = GA03[((GA03.Longitude <= 360 - 60) & (GA03.Longitude >= 360 - 65)) | (GA03.Longitude >= 360 - 25)]
@@ -84,7 +88,7 @@ GA03.to_csv('GA03_filtered.csv', index=False)
 data = [GIPY05_data['Station'], GIPY05_data['Latitude [degrees_north]'], GIPY05_data['Longitude [degrees_east]'],
         GIPY05_data['DEPTH [m]'],
         GIPY05_data['CTDTMP [deg C]'], GIPY05_data['CTDSAL'], GIPY05_data['NO2+NO3_D_CONC_BOTTLE [umol/kg]'],
-        GIPY05_data['Fe_D_CONC_BOTTLE [nmol/kg]']]
+        GIPY05_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GIPY05_data['PRESSURE [dbar]']]
 GIPY05 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GIPY05 = GIPY05[(GIPY05.Latitude >= -45) | (GIPY05.Latitude <= -65)]
@@ -112,7 +116,7 @@ GIPY05.to_csv('GIPY05_filtered.csv', index=False)
 data = [GP02_data['Station'], GP02_data['Latitude [degrees_north]'], GP02_data['Longitude [degrees_east]'],
         GP02_data['DEPTH [m]'],
         GP02_data['CTDTMP [deg C]'], GP02_data['CTDSAL'], GP02_data['NO2+NO3_D_CONC_BOTTLE [umol/kg]'],
-        GP02_data['Fe_D_CONC_BOTTLE [nmol/kg]']]
+        GP02_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GP02_data['PRESSURE [dbar]']]
 GP02 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GP02 = GP02[(GP02.Longitude <= 155) | (GP02.Longitude >= 180)]
@@ -140,7 +144,7 @@ GP02.to_csv('GP02_filtered.csv', index=False)
 data = [GIPY04_data['Station'], GIPY04_data['Latitude [degrees_north]'], GIPY04_data['Longitude [degrees_east]'],
         GIPY04_data['DEPTH [m]'],
         GIPY04_data['CTDTMP [deg C]'], GIPY04_data['CTDSAL'], GIPY04_data['NITRATE_D_CONC_BOTTLE [umol/kg]'],
-        GIPY04_data['Fe_D_CONC_BOTTLE [nmol/kg]']]
+        GIPY04_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GIPY04_data['PRESSURE [dbar]']]
 GIPY04 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GIPY04 = GIPY04[(GIPY04.Latitude >= -45)]

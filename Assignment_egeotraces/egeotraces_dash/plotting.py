@@ -117,7 +117,7 @@ def update_legend(fig, data_type, cruise):
 def initialize_profiles(cruise, x_range, y_range):
     global click_lat, click_lon, click_station
     fig = make_subplots(rows=1, cols=6, subplot_titles=("<b>Temperature</b>", "<b>Salinity</b>", "<b>Nitrate</b>",
-                                                        "<b>Iron</b>", "<b>Nitrate:Iron</b>", "<b>Density</b>"))
+                                                        "<b>Iron</b>", "<b>Nitrate:Iron</b>", "<b>Sigma0</b>"))
 
     set_click_lat_lon_values(None, cruise, False) #setting the initial click value
     lat, lon = click_lat, click_lon
@@ -171,7 +171,7 @@ def initialize_profiles(cruise, x_range, y_range):
     fig.update_xaxes(title_text="umol/kg", row=1, col=3)
     fig.update_xaxes(title_text="nmol/kg", row=1, col=4)
     fig.update_xaxes(title_text="", row=1, col=5)
-    fig.update_xaxes(title_text="", row=1, col=6)
+    fig.update_xaxes(title_text="kg/m\u00B3", row=1, col=6)
 
     fig = update_x_range(fig, x_range, cruise)
     fig = update_legend(fig, 'click', cruise)
@@ -280,34 +280,6 @@ def update_profiles(hov_data, click_data, cruise, fig, x_range, y_range):
 
 ###MAP PLOTTING
 
-def get_dotcolor(color_checkbox):
-    if color_checkbox == ['blue']:
-        dotcolor = "blue"
-    else:
-        dotcolor = 'fuchsia'
-    return dotcolor
-
-def update_background(background, fig):
-    # use this for a plain, easy-to-read street map
-    if background == ['plain']:
-        fig.update_layout(mapbox_style="open-street-map")
-    # or, use this for a USGS colored topography raster instead of "open-street-map"
-    # I do not know how that URL actually delivers the images
-    # it is interactive but loading tiles upon "zoom in" may be slowish.
-    # Also, at smaller scales, tiles outside of USA may be blank.
-    else:
-        fig.update_layout(
-            mapbox_style="white-bg",
-            mapbox_layers=[
-                {"below": 'traces',
-                 "sourcetype": "raster",
-                 "sourceattribution": "United States Geological Survey",
-                 "source": [
-                     "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"]
-                 }
-            ])
-    return fig
-
 #initializes click marker for map
 def map_initialize_cruise(fig, cruise):
     global click_lat, click_lon, click_station
@@ -318,29 +290,28 @@ def map_initialize_cruise(fig, cruise):
 
     return fig
 
-def plot_stations(dotcolor, cruise):
+def plot_stations( cruise):
     if cruise == 'GIPY0405':
         fig = px.scatter_mapbox(GIPY0405, lat="Latitude", lon="Longitude", hover_name="Station",
-                                color_discrete_sequence=[dotcolor], zoom=1.2, center=dict(lat=-50, lon=0))
+                                color_discrete_sequence=['blue'], zoom=1.2, center=dict(lat=-50, lon=0))
     elif cruise == 'GA03':
         fig = px.scatter_mapbox(GA03, lat="Latitude", lon="Longitude", hover_name="Station",
-                                color_discrete_sequence=[dotcolor],
+                                color_discrete_sequence=['blue'],
                                 zoom=1.2)
     elif cruise == 'GP02':
         fig = px.scatter_mapbox(GP02, lat="Latitude", lon="Longitude", hover_name="Station",
-                                color_discrete_sequence=[dotcolor],
+                                color_discrete_sequence=['blue'],
                                 zoom=1.2)
+    fig.update_layout(mapbox_style="open-street-map")
     return fig
 
 #figure functions
-def initialize_map(color_checkbox, background, cruise):
-    dotcolor = get_dotcolor(color_checkbox)
+def initialize_map(cruise):
 
-    fig = plot_stations(dotcolor, cruise)
+    fig = plot_stations(cruise)
 
     fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
 
-    fig = update_background(background, fig)
     if cruise == 'GIPY0405':
         fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
     else:
@@ -349,16 +320,11 @@ def initialize_map(color_checkbox, background, cruise):
     return fig
 
 # update map for cruise changes
-def switch_map(color_checkbox, background, cruise, fig):
+def switch_map(cruise, fig):
     fig.data = []
-
-    dotcolor = get_dotcolor(color_checkbox)
-
-    fig = plot_stations(dotcolor, cruise)
+    fig = plot_stations(cruise)
 
     fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
-
-    update_background(background, fig)
 
     if cruise == 'GIPY0405':
         fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
@@ -368,13 +334,12 @@ def switch_map(color_checkbox, background, cruise, fig):
     return fig
 
 
-def update_map(color_checkbox, background, click_data, figure_data, cruise, fig):
+def update_map(click_data, figure_data, cruise, fig):
     global click_lat, click_lon, click_station
 
     # Dot color, map type and map zoom are interactive.
     # code from https://plotly.com/python/mapbox-layers/ without the "fig.show".
-    dotcolor = get_dotcolor(color_checkbox)
-    fig = plot_stations(dotcolor, cruise)
+    fig = plot_stations(cruise)
     if figure_data is not None: #set map layout to its previous settings, so the zoom and position doesn't reset
         fig.layout['mapbox'] = figure_data['layout']['mapbox']
 
@@ -385,7 +350,7 @@ def update_map(color_checkbox, background, click_data, figure_data, cruise, fig)
                                        mode='markers', marker=go.scattermapbox.Marker(size=10, color='rgb(255, 0, 0)')))
     else:
         fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
-    fig = update_background(background, fig)
+
     if cruise == 'GIPY0405':
         fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
     else:
