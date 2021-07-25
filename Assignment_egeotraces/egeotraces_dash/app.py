@@ -62,7 +62,7 @@ app.layout = html.Div([
                 'watermark': True,
                 'modeBarButtonsToRemove': ['pan2d', 'select2d', 'lasso2d'],
             },
-            #clear_on_unhover = True, #clears hover plots when cursor isn't over the station
+            clear_on_unhover = True, #clears hover plots when cursor isn't over the station
         )
     ], style={'width': '50%', 'display': 'inline-block', 'padding': '0 20', 'vertical-align': 'middle', 'margin-bottom': 30, 'margin-right': 50, 'margin-left': 20}),
 
@@ -183,8 +183,10 @@ def update_profiles(hov_data, click_data, cruise, x_range, y_range):
     # otherwise, we update the profiles for the current cruise
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_profiles(click_data, cruise, fig_profiles, x_range, y_range)
-    else:
+    elif (dash.callback_context.triggered[0]['prop_id'] == 'map.clickData'):
         fig = plot.update_profiles(hov_data, click_data, cruise, fig_profiles, x_range, y_range)
+    else:
+        fig = plot.update_profiles(hov_data, None, cruise, fig_profiles, x_range, y_range)
     return fig
 
 
@@ -193,15 +195,18 @@ def update_profiles(hov_data, click_data, cruise, x_range, y_range):
 @app.callback(
     Output('map', 'figure'),
     Input('cruise', 'value'),
+    Input('map', 'hoverData'),
     Input('map', 'clickData'),
     Input('map', 'figure')
 )
-def update_map(cruise, click_data, figure_data):
+def update_map(cruise, hov_data, click_data, figure_data):
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(cruise, fig_map)
+    elif (dash.callback_context.triggered[0]['prop_id'] == 'map.clickData'):
+        fig = plot.update_map(hov_data, click_data, figure_data, cruise, fig_map)
     else:
-        fig = plot.update_map(click_data, figure_data, cruise, fig_map)
+        fig = plot.update_map(hov_data, None, figure_data, cruise, fig_map)
     return fig
 
 
