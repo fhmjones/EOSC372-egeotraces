@@ -142,7 +142,7 @@ def clear_click_traces(fig):
 def initialize_profiles(cruise, x_range, y_range):
     #global click_stations
     fig = make_subplots(rows=1, cols=6, subplot_titles=("<b>Temperature</b>", "<b>Salinity</b>", "<b>Nitrate</b>",
-                                                        "<b>Iron</b>", "<b>Nitrate:Iron</b>", "<b>Sigma0</b>"))
+                                                        "<b>Iron</b>", "<b>Nitrate/Iron</b>", "<b>Sigma0</b>"))
 
 
     # empty traces for hovered data

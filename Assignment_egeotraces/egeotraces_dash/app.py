@@ -40,11 +40,13 @@ app.layout = html.Div([
         #### Instructions  
         
         - Hover over a station (dots on the map) to plot the corresponding temperature, salinity, nitrate, and iron profiles in blue.
-        - Click on a station to make a fixed plot of the depth profiles in red.  
+        - Click on a station to plot its depth profiles.
+        - To remove profiles, click again on the stations's dot on the map.  
+        - The cruise can be changed with radiobuttons.
         - Mouse wheel zooms within the map.  
-        - Map background and station dot color can be adjusted with checkboxes.
-        - The cruise can be changed with radiobuttons.      
-        - The depth profiles can be saved as a figure which students could submit with an assignment.   
+        - Use the slider to the left of the profiles to constrain the depth axis. Drag the top-most handle down, or the bottom-most handle up.
+        - Adjust the x-axis range with radiobuttons.      
+        - To save all profiles as one PNG image, click the "camera" icon that appears upper-right of plots when mouse pointer is over the profile plots.   
 
         ----------
         '''),
@@ -153,8 +155,9 @@ app.layout = html.Div([
 
         ### Attributions
  
-        - **Code by:** Code by: J. Byer for UBC's [OCESE project](https://www.eoas.ubc.ca/education/current-major-initiatives/ocese).
-        - **Oceanography Data from:** Schlitzer, R., Anderson, R. F., Masferrer Dodas, E, et al., The GEOTRACES Intermediate Data Product 2017, Chem. Geol. (2018), https://doi.org/10.1016/j.chemgeo.2018.05.040.
+        - Code by J. Byer for UBC's [OCESE project](https://www.eoas.ubc.ca/education/current-major-initiatives/ocese).
+        - Oceanography Data from: Schlitzer, R., Anderson, R. F., Masferrer Dodas, E, et al., The GEOTRACES Intermediate Data Product 2017, Chem. Geol. (2018), https://doi.org/10.1016/j.chemgeo.2018.05.040.
+        - Potential density anomaly (Sigma_0) calculated from salinity and temperature data using [The Gibbs SeaWater Oceanographic Toolbox of TEOS-10](http://www.teos-10.org/pubs/gsw/html/gsw_contents.html).
 
         ''')
 ], style={'width': '1000px'})
