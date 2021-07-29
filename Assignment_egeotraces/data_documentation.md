@@ -16,3 +16,8 @@
     - Creates a column and adds the ratio data
     - Creates a column and adds the density data
     - Removes specific stations that have been indicated
+
+## Calculated Data
+The ratio and density data were both calculated. 
+- The ratio data is calculated by changing the units of nitrate to be the same as the iron, and then dividing nitrate by iron. This performs the calculation for points where nitrate and iron are both measured at the same exact depth.
+- The density data is calculated using the [gsw library](http://www.teos-10.org/pubs/gsw/html/gsw_contents.html). Potential density anomoly is calculated using the `gsw.sigma0` function which takes in absolute salinity and temperature. The salinity from the original data is potential salinity, so the `gsw.SA_from_SP` function was used to get absolute salinity from potential salinity first. 
