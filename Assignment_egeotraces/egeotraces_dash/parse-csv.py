@@ -48,14 +48,34 @@ def add_density_data(cruise_data):
 
     cruise_data['Density'] = sigma0
 
+'''
+def add_test_density_data(cruise_data):
+    practical_salinity = cruise_data['Salinity']
+    temperature = cruise_data['Temperature']
+    sigma0 = gsw.sigma0(practical_salinity, temperature)
+
+    cruise_data['Density'] = sigma0
+'''
 
 # read in original data
 GA03_data = pd.read_csv("./data/GA03w.csv")
 GIPY05_data = pd.read_csv("./data/GIPY05e.csv")
 GP02_data = pd.read_csv("./data/GP02w.csv")
 GIPY04_data = pd.read_csv("./data/GIPY04.csv")
+#TEST_data = pd.read_csv("./data/TestCruise.csv")
 
 headers = ['Station', 'Latitude', 'Longitude', 'Depth', 'Temperature', 'Salinity', 'Nitrate', 'Iron', 'Pressure']
+
+'''
+#make TEST dataframe
+data = [TEST_data['Station'], TEST_data['Latitude [degrees_north]'], TEST_data['Longitude [degrees_east]'],
+        TEST_data['DEPTH [m]'], TEST_data['CTDTMP [deg C]'], TEST_data['CTDSAL'], TEST_data['NO2+NO3_D_CONC_BOTTLE [umol/kg]'],
+        TEST_data['Fe_D_CONC_BOTTLE [nmol/kg]'], TEST_data['PRESSURE [dbar]']]
+TEST = pd.concat(data, axis=1, keys=headers)
+add_density_data(TEST)
+TEST.to_csv('TEST_filtered.csv', index=False)
+'''
+
 
 # make GA03 dataframe and csv
 data = [GA03_data['Station'], GA03_data['Latitude [degrees_north]'], GA03_data['Longitude [degrees_east]'],
@@ -82,7 +102,7 @@ for i in range(len(GA03)):
 # print(stations)
 for i in [4]:  # choosing specific profiles
     GA03 = GA03.drop(GA03[(GA03.Latitude == positions[i][0]) & (GA03.Longitude == positions[i][1])].index)
-GA03.to_csv('GA03_filtered.csv', index=False)
+GA03.to_csv('./data/GA03_filtered.csv', index=False)
 
 # make GIPY05 dataframe and csv
 data = [GIPY05_data['Station'], GIPY05_data['Latitude [degrees_north]'], GIPY05_data['Longitude [degrees_east]'],
@@ -110,7 +130,7 @@ for i in range(len(GIPY05)):
 # print(stations)
 # for i in []: #choosing specific profiles
 #        GIPY05 = GIPY05.drop(GIPY05[(GIPY05.Latitude == positions[i][0]) & (GIPY05.Longitude == positions[i][1])].index)
-GIPY05.to_csv('GIPY05_filtered.csv', index=False)
+GIPY05.to_csv('./data/GIPY05_filtered.csv', index=False)
 
 # make GP02 dataframe and csv
 data = [GP02_data['Station'], GP02_data['Latitude [degrees_north]'], GP02_data['Longitude [degrees_east]'],
@@ -138,7 +158,7 @@ for i in range(len(GP02)):
 # print(stations)
 # for i in []: #choosing specific profiles
 #        GP02 = GP02.drop(GP02[(GP02.Latitude == positions[i][0]) & (GP02.Longitude == positions[i][1])].index)
-GP02.to_csv('GP02_filtered.csv', index=False)
+GP02.to_csv('./data/GP02_filtered.csv', index=False)
 
 # make GIPY04 dataframe and csv
 data = [GIPY04_data['Station'], GIPY04_data['Latitude [degrees_north]'], GIPY04_data['Longitude [degrees_east]'],
@@ -166,4 +186,4 @@ for i in range(len(GIPY04)):
 # print(stations)
 for i in [0, 2, 4]:  # choosing specific profiles
     GIPY04 = GIPY04.drop(GIPY04[(GIPY04.Latitude == positions[i][0]) & (GIPY04.Longitude == positions[i][1])].index)
-GIPY04.to_csv('GIPY04_filtered.csv', index=False)
+GIPY04.to_csv('./data/GIPY04_filtered.csv', index=False)
