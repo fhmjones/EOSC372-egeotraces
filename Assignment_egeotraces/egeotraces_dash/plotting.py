@@ -291,7 +291,7 @@ def map_initialize_cruise(fig, cruise):
 
     return fig
 
-def plot_stations( cruise):
+def plot_stations(cruise):
     if cruise == 'GIPY0405':
         fig = px.scatter_mapbox(GIPY0405, lat="Latitude", lon="Longitude", hover_name="Station",
                                 color_discrete_sequence=['blue'], zoom=1.2, center=dict(lat=-50, lon=0))
@@ -304,6 +304,15 @@ def plot_stations( cruise):
                                 color_discrete_sequence=['blue'],
                                 zoom=1.2)
     fig.update_layout(mapbox_style="open-street-map")
+
+    # adding markers from: https://plotly.com/python/scattermapbox/
+    if (len(click_stations) != 0):
+        for i in range(len(click_stations)):
+            fig.add_trace(go.Scattermapbox(lat=[click_stations[i].lat], lon=[click_stations[i].lon], showlegend=False,
+                                           hovertemplate="<b>" + str(click_stations[i].name) +
+                                                         "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
+                                           mode='markers', marker=go.scattermapbox.Marker(size=10, color=click_stations[i].colour)))
+
     return fig
 
 #figure functions
@@ -348,16 +357,6 @@ def update_map(hov_data, click_data, figure_data, cruise, fig):
     if figure_data is not None: #set map layout to its previous settings, so the zoom and position doesn't reset
         fig.layout['mapbox'] = figure_data['layout']['mapbox']
 
-    # adding markers from: https://plotly.com/python/scattermapbox/
-    if (len(click_stations) != 0):
-        for i in range(len(click_stations)):
-            fig.add_trace(go.Scattermapbox(lat=[click_stations[i].lat], lon=[click_stations[i].lon], showlegend=False,
-                                           hovertemplate="<b>" + str(click_stations[i].name) +
-                                                         "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
-                                           mode='markers', marker=go.scattermapbox.Marker(size=10, color=click_stations[i].colour)))
-    else:
-        #fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
-        pass
 
     if cruise == 'GIPY0405':
         fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
