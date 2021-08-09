@@ -31,7 +31,7 @@ def remove_empty_data(cruise_data):
 def add_ratio_data(cruise_data):
     nit = cruise_data['Nitrate']
     iron = cruise_data['Iron']
-    ratio = (nit * 1000) / iron
+    ratio = nit/iron
 
     cruise_data['Ratio'] = ratio
 

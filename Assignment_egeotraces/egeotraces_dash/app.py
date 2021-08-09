@@ -147,9 +147,11 @@ app.layout = html.Div([
                                            'autoScale2d'],
             }
         ),
-    ], style={'display': 'inline-block', 'width': '93%', 'vertical-align': 'middle'}),
+    ], style={'display': 'inline-block', 'width': '93%', 'vertical-align': 'middle', 'margin-bottom': '50px'}),
 
-
+    dcc.Markdown('''
+            *Density, Sigma0, is potential density anomaly, or potential density minus 1000 kg/m\u00B3. [Reference](http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html).
+            '''),
     dcc.Markdown('''
         ----
 
