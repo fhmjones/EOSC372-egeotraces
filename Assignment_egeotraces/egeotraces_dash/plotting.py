@@ -15,7 +15,7 @@ GIPY0405 = pd.concat([GIPY04, GIPY05], ignore_index=True) #merging the csv files
 hov_station = station.Station('hover', None, None, None, 'blue')
 click_stations = []
 
-colours = ['darkred', 'red', 'darkorange', 'green', 'forestgreen', 'darkviolet', 'deeppink']
+colours = ['darkred', 'limegreen', 'red', 'sienna', 'darkorange', 'darkgreen', 'darkviolet', 'deeppink']
 colour_index = -1
 
 ###SUBPLOTS PLOTTING
@@ -204,6 +204,8 @@ def initialize_profiles(cruise, x_range, y_range):
 def switch_profiles(click_data, cruise, fig, x_range, y_range):
     #global click_stations
     #set_click_lat_lon_values(click_data, cruise, True)
+    global colour_index
+    colour_index = -1
 
     fig = clear_hover_traces(fig)
     fig = clear_click_traces(fig)
