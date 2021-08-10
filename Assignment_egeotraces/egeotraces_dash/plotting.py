@@ -16,15 +16,19 @@ hov_station = station.Station('hover', None, None, None, 'blue')
 click_stations = []
 
 colours = ['darkred', 'limegreen', 'red', 'sienna', 'darkorange', 'darkgreen', 'darkviolet', 'deeppink']
-colour_index = -1
 
 ###SUBPLOTS PLOTTING
+def contains_colour(list_stations, colour):
+    for s in list_stations:
+        if s.colour == colour:
+            return True
+    return False
+
 def get_colour():
-    global colour_index, colours
-    colour_index += 1
-    if colour_index >= len(colours):
-        colour_index = 0
-    return colours[colour_index]
+    for c in colours:
+        if contains_colour(click_stations, c) == False:
+            return c
+    return 'black'
 
 #get lat and lons from hoverData
 def set_hov_lat_lon_values(hov_data):
@@ -49,6 +53,7 @@ def set_click_lat_lon_values(click_data, cruise, new_cruise):
     elif 'hovertext' not in click_data['points'][0]:
         lat = click_data['points'][0]['lat']
         lon = click_data['points'][0]['lon']
+
         station.remove_from_list(lat, lon, click_stations)
     else:
         lat = click_data['points'][0]['lat']
@@ -204,8 +209,6 @@ def initialize_profiles(cruise, x_range, y_range):
 def switch_profiles(click_data, cruise, fig, x_range, y_range):
     #global click_stations
     #set_click_lat_lon_values(click_data, cruise, True)
-    global colour_index
-    colour_index = -1
 
     fig = clear_hover_traces(fig)
     fig = clear_click_traces(fig)
@@ -297,7 +300,7 @@ def map_initialize_cruise(fig, cruise):
     for i in range(len(click_stations)):
         fig.add_trace(go.Scattermapbox(lat=[click_stations[i].lat], lon=[click_stations[i].lon], showlegend=False, hovertemplate="<b>" + str(click_stations[i].name) +
                                          "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
-                                       mode='markers', marker=go.scattermapbox.Marker(size=10, color=colours[i])))
+                                       mode='markers', marker=go.scattermapbox.Marker(size=10, color=click_stations[i].colour)))
         #fig.update(lataxis_showgrid=True, lonaxis_showgrid=True)
         #fig.update_geos(lataxis_showgrid=True, lonaxis_showgrid=True)
 
@@ -348,7 +351,7 @@ def initialize_map(cruise):
 def switch_map(cruise, fig):
     fig.data = []
     fig = plot_stations(cruise)
-
+    
     fig = map_initialize_cruise(fig, cruise)  # initializes the click for the new cruise
 
     if cruise == 'GIPY0405':
