@@ -6,6 +6,12 @@
 - For nitrate, NITRATE_D_CONC_BOTTLE has profiles for GIPY04 and GA03 but not the other two, and NO2+NO3_D_CONC_BOTTLE has profiles for GIPY05 and GP02 but not the other two.
 - For temperature and iron there is only one choice and it has sufficient profiles.
 
+## Fetching and Preparing the Data
+- Data is collected from the [geotraces site](https://geotraces.webodv.awi.de/) and downloaded as a .txt
+- Remove all the lines in the file that begin with "//" in Powershell, using the command:  
+`Get-Content data.txt | Where { $_ -notmatch "^//" } | Set-Content filtered_data_.txt`
+- The new .txt is converted to a csv using Excel
+
 ## Filtering the Data
 - The data file downloaded gave the entire GIPY05 cruise, so I manually removed stations so the file only contained GIPY05e. Similarly with the other cruises
 - I used pandas to create filtered versions of the csv files for each cruise. The filtering process:
