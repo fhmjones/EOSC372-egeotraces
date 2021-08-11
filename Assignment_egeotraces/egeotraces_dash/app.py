@@ -18,6 +18,13 @@ from dash.dependencies import Input, Output
 
 import plotting as plot
 
+#load markdown
+instructions = open('instructions.md', 'r')
+instructions_markdown = instructions.read()
+
+attributions = open('attributions.md', 'r')
+attributions_markdown = attributions.read()
+
 #initial settings for the plots
 initial_cruise = 'GIPY0405'
 initial_y_range = [0, 500]
@@ -34,22 +41,10 @@ app = dash.Dash(
 )
 
 app.layout = html.Div([
-    dcc.Markdown('''
-        ### EOSC 372 GEOTRACES Assignment
-        
-        #### Instructions  
-        
-        - Hover over a station (dots on the map) to plot the corresponding temperature, salinity, nitrate, and iron profiles in blue.
-        - Click on a station to plot its depth profiles.
-        - To remove profiles, click again on the stations's dot on the map.  
-        - The cruise can be changed with radiobuttons.
-        - Mouse wheel zooms within the map.  
-        - Use the slider to the left of the profiles to constrain the depth axis. Drag the top-most handle down, or the bottom-most handle up.
-        - Adjust the x-axis range with radiobuttons.      
-        - To save all profiles as one PNG image, click the "camera" icon that appears upper-right of plots when mouse pointer is over the profile plots.   
 
-        ----------
-        '''),
+    dcc.Markdown(
+        children=instructions_markdown
+        ),
 
 # plot with the map of cruise stations
     html.Div([
@@ -152,16 +147,9 @@ app.layout = html.Div([
     dcc.Markdown('''
             *Density, Sigma0, is potential density anomaly, or potential density minus 1000 kg/m\u00B3. [Reference](http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html).
             '''),
-    dcc.Markdown('''
-        ----
-
-        ### Attributions
- 
-        - Code by J. Byer for UBC's [OCESE project](https://www.eoas.ubc.ca/education/current-major-initiatives/ocese).
-        - Oceanography Data from: Schlitzer, R., Anderson, R. F., Masferrer Dodas, E, et al., The GEOTRACES Intermediate Data Product 2017, Chem. Geol. (2018), https://doi.org/10.1016/j.chemgeo.2018.05.040.
-        - Potential density anomaly (Sigma_0) calculated from salinity and temperature data using [The Gibbs SeaWater Oceanographic Toolbox of TEOS-10](http://www.teos-10.org/pubs/gsw/html/gsw_contents.html).
-
-        ''')
+    dcc.Markdown(
+        children=attributions_markdown
+    )
 ], style={'width': '1000px'})
 
 
