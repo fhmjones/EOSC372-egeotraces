@@ -28,13 +28,39 @@ def remove_empty_data(cruise_data):
 
 
 # add data for [Nitrate] : [Fe] or [Nitrate]/[Fe]
+def get_nitrate(cruise_data, index, row):
+    current_depth = row['Depth']
+    min = None
+    max = None
+    if row['Depth'] <= 100:
+        min, max = current_depth - 5, current_depth + 5
+    elif row['Depth'] > 100:
+        min, max = current_depth - 10, current_depth + 10
+
+    avg_nitrate = cruise_data['Nitrate'][((cruise_data.Depth <= max) & (cruise_data.Depth >= min))].mean()
+    return avg_nitrate
+
+
 def add_ratio_data(cruise_data):
-    nit = cruise_data['Nitrate']
-    iron = cruise_data['Iron']
-    ratio = nit/iron
+    ratio = []
+
+    for index, row in cruise_data.iterrows():
+        if row['Iron'] is None:
+            ratio.append(None)
+        else:
+            nitrate = get_nitrate(cruise_data, index, row)
+            ratio.append(nitrate / row['Iron'])
 
     cruise_data['Ratio'] = ratio
 
+'''    
+def add_ratio_data(cruise_data):
+    nit = cruise_data['Nitrate']
+    iron = cruise_data['Iron']
+    ratio = nit / iron
+
+    cruise_data['Ratio'] = ratio
+'''
 
 def add_density_data(cruise_data):
     #from: http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html
@@ -84,7 +110,7 @@ data = [GA03_data['Station'], GA03_data['Latitude [degrees_north]'], GA03_data['
 GA03 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GA03 = GA03[((GA03.Longitude <= 360 - 60) & (GA03.Longitude >= 360 - 65)) | (GA03.Longitude >= 360 - 25)]
-GA03 = average_data(GA03)
+#GA03 = average_data(GA03)
 add_ratio_data(GA03)
 add_density_data(GA03)
 GA03 = remove_empty_data(GA03)
@@ -112,7 +138,7 @@ data = [GIPY05_data['Station'], GIPY05_data['Latitude [degrees_north]'], GIPY05_
 GIPY05 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GIPY05 = GIPY05[(GIPY05.Latitude >= -45) | (GIPY05.Latitude <= -65)]
-GIPY05 = average_data(GIPY05)
+#GIPY05 = average_data(GIPY05)
 add_ratio_data(GIPY05)
 add_density_data(GIPY05)
 GIPY05 = remove_empty_data(GIPY05)
@@ -140,7 +166,7 @@ data = [GP02_data['Station'], GP02_data['Latitude [degrees_north]'], GP02_data['
 GP02 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GP02 = GP02[(GP02.Longitude <= 155) | (GP02.Longitude >= 180)]
-GP02 = average_data(GP02)
+# GP02 = average_data(GP02)
 add_ratio_data(GP02)
 add_density_data(GP02)
 GP02 = remove_empty_data(GP02)
@@ -168,7 +194,7 @@ data = [GIPY04_data['Station'], GIPY04_data['Latitude [degrees_north]'], GIPY04_
 GIPY04 = pd.concat(data, axis=1, keys=headers)
 # remove unwanted lons and lats
 GIPY04 = GIPY04[(GIPY04.Latitude >= -45)]
-GIPY04 = average_data(GIPY04)
+# GIPY04 = average_data(GIPY04)
 add_ratio_data(GIPY04)
 add_density_data(GIPY04)
 GIPY04 = remove_empty_data(GIPY04)
