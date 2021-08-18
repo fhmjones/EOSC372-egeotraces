@@ -27,6 +27,16 @@ def is_empty(hov_station):
     else:
         return False
 
+def dict_to_station(dict):
+    station = Station(type=dict['type'], lat=dict['lat'], lon=dict['lon'], name=dict['name'], colour=dict['colour'])
+    return station
+
+def dict_list_to_station(dict_list):
+    station_list = []
+    for s in dict_list:
+        station_list.append(dict_to_station(s))
+    return station_list
+
 #colours
 def contains_colour(list_stations, colour):
     for s in list_stations:
@@ -42,25 +52,28 @@ def get_colour(click_stations): #getting the next colour in the series to plot
 
 #get lat and lons from hoverData
 def get_hov_station(hov_data):
+    hov_station = Station('hover', None, None, None, 'blue')
+    if hov_data is not None:
     # hovering over the clicked point doesn't give 'hovertext', so when there is no hovertext, set the hover data to the current click data
-    if 'hovertext' in hov_data['points'][0]:
-        lat = hov_data['points'][0]['lat']
-        lon = hov_data['points'][0]['lon']
-        name = str(hov_data['points'][0]['hovertext'])
-        hov_station = Station('hover', lat, lon, name, 'blue')
+        if 'hovertext' in hov_data['points'][0]:
+            lat = hov_data['points'][0]['lat']
+            lon = hov_data['points'][0]['lon']
+            name = str(hov_data['points'][0]['hovertext'])
+            hov_station = Station('hover', lat, lon, name, 'blue')
     return hov_station
 
 #get lat and lons from clickData
 def get_click_stations(click_data, click_stations):
     # when you click on a point that is already clicked, the hovertext is not in the click_data dict
     # in that case, we keep the click_lat, lon and station the same
-    if 'hovertext' not in click_data['points'][0]:
-        lat = click_data['points'][0]['lat']
-        lon = click_data['points'][0]['lon']
-        remove_from_list(lat, lon, click_stations)
-    else:
-        lat = click_data['points'][0]['lat']
-        lon = click_data['points'][0]['lon']
-        name = click_data['points'][0]['hovertext']
-        click_stations.append(Station('click', lat, lon, name, get_colour(click_stations)))
+    if click_data is not None:
+        if 'hovertext' not in click_data['points'][0]:
+            lat = click_data['points'][0]['lat']
+            lon = click_data['points'][0]['lon']
+            remove_from_list(lat, lon, click_stations)
+        else:
+            lat = click_data['points'][0]['lat']
+            lon = click_data['points'][0]['lon']
+            name = click_data['points'][0]['hovertext']
+            click_stations.append(Station('click', lat, lon, name, get_colour(click_stations)))
     return click_stations

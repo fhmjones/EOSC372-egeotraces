@@ -31,6 +31,11 @@ attributions_markdown = attributions.read()
 initial_cruise = 'GIPY0405'
 initial_y_range = [0, 500]
 initial_x_range = 'default'
+initial_hov_station = station.Station('hover', None, None, None, 'blue')
+initial_click_stations = []
+
+def station_dict(obj):
+    return obj.__dict__
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -152,8 +157,9 @@ app.layout = html.Div([
     dcc.Markdown(
         children=attributions_markdown
     ),
-    dcc.Store(id='hov_station'),
-    dcc.Store(id='click_stations')
+    dcc.Store(id='hov_station',
+              data=json.dumps(initial_hov_station.__dict__)),
+    dcc.Store(id='click_stations', data=json.dumps(initial_click_stations, default=station_dict))
 ], style={'width': '1000px'})
 
 
@@ -186,14 +192,14 @@ def update_hover_station(hov_data, cruise):
     Input(component_id='cruise', component_property='value'),
 )
 def update_click_stations(click_data, click_stations_json, cruise):
-    click_stations = json.loads(click_stations_json)
+    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         # clear click stations
         click_stations = []
     else:
         click_stations = station.get_click_stations(click_data, click_stations)
 
-    return json.dumps(click_stations)
+    return json.dumps(click_stations, default=station_dict)
 
 #Suplot graph
 @app.callback(
@@ -205,8 +211,9 @@ def update_click_stations(click_data, click_stations_json, cruise):
     Input(component_id='y_range', component_property='value')
 )
 def update_profiles(hov_station_json, click_stations_json, cruise, x_range, y_range):
-    hov_station = json.loads(hov_station_json)
-    click_stations = json.loads(click_stations_json)
+    hov_station = station.dict_to_station(json.loads(hov_station_json))
+    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+
     y_range[0] = abs(y_range[0])
     y_range[1] = abs(y_range[1])
     # if the callback that was triggered was the cruise changing, we switch profiles (switch cruises)
@@ -227,7 +234,7 @@ def update_profiles(hov_station_json, click_stations_json, cruise, x_range, y_ra
     Input(component_id='map', component_property='figure')
 )
 def update_map(cruise, click_stations_json, figure_data):
-    click_stations = json.loads(click_stations_json)
+    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(cruise, fig_map)
