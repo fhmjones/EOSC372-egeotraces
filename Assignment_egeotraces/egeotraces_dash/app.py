@@ -10,6 +10,7 @@
 
 from flask import Flask
 from os import environ
+import json
 
 import dash
 import dash_core_components as dcc
@@ -17,6 +18,7 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import plotting as plot
+import station
 
 #load markdown
 instructions = open('instructions.md', 'r')
@@ -149,7 +151,9 @@ app.layout = html.Div([
             '''),
     dcc.Markdown(
         children=attributions_markdown
-    )
+    ),
+    dcc.Store(id='hov_station'),
+    dcc.Store(id='click_stations')
 ], style={'width': '1000px'})
 
 
@@ -160,46 +164,75 @@ app.layout = html.Div([
 fig_map = plot.initialize_map(initial_cruise)
 fig_profiles = plot.initialize_profiles(initial_cruise, initial_x_range, initial_y_range)
 
+#stations
+@app.callback(
+    Output(component_id='hov_station', component_property='data'),
+    Input(component_id='map', component_property='hoverData'),
+    Input(component_id='cruise', component_property='value'),
+)
+def update_hover_station(hov_data, cruise):
+    if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
+        #clear hover
+        hov_station = station.Station('hover', None, None, None, 'blue')
+    else:
+        hov_station = station.get_hov_station(hov_data)
+
+    return json.dumps(hov_station.__dict__)
+
+@app.callback(
+    Output(component_id='click_stations', component_property='data'),
+    Input(component_id='map', component_property='clickData'),
+    Input(component_id='click_stations', component_property='data'),
+    Input(component_id='cruise', component_property='value'),
+)
+def update_click_stations(click_data, click_stations_json, cruise):
+    click_stations = json.loads(click_stations_json)
+    if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
+        # clear click stations
+        click_stations = []
+    else:
+        click_stations = station.get_click_stations(click_data, click_stations)
+
+    return json.dumps(click_stations)
+
 #Suplot graph
 @app.callback(
     Output(component_id='profiles', component_property='figure'),
-    Input(component_id='map', component_property='hoverData'),
-    Input(component_id='map', component_property='clickData'),
+    Input(component_id='hov_station', component_property='data'),
+    Input(component_id='click_stations', component_property='data'),
     Input(component_id='cruise', component_property='value'),
     Input(component_id='x_range', component_property='value'),
     Input(component_id='y_range', component_property='value')
 )
-def update_profiles(hov_data, click_data, cruise, x_range, y_range):
+def update_profiles(hov_station_json, click_stations_json, cruise, x_range, y_range):
+    hov_station = json.loads(hov_station_json)
+    click_stations = json.loads(click_stations_json)
     y_range[0] = abs(y_range[0])
     y_range[1] = abs(y_range[1])
     # if the callback that was triggered was the cruise changing, we switch profiles (switch cruises)
     # otherwise, we update the profiles for the current cruise
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
-        fig = plot.switch_profiles(click_data, cruise, fig_profiles, x_range, y_range)
-    elif (dash.callback_context.triggered[0]['prop_id'] == 'map.clickData'):
-        fig = plot.update_profiles(hov_data, click_data, cruise, fig_profiles, x_range, y_range)
+        fig = plot.switch_profiles(cruise, fig_profiles, x_range, y_range)
     else:
-        fig = plot.update_profiles(hov_data, None, cruise, fig_profiles, x_range, y_range)
+        fig = plot.update_profiles(hov_station, click_stations, cruise, fig_profiles, x_range, y_range)
     return fig
 
 
 
 # The callback function with it's app.callback wrapper.
 @app.callback(
-    Output('map', 'figure'),
-    Input('cruise', 'value'),
-    Input('map', 'hoverData'),
-    Input('map', 'clickData'),
-    Input('map', 'figure')
+    Output(component_id='map', component_property='figure'),
+    Input(component_id='cruise', component_property='value'),
+    Input(component_id='click_stations', component_property='data'),
+    Input(component_id='map', component_property='figure')
 )
-def update_map(cruise, hov_data, click_data, figure_data):
+def update_map(cruise, click_stations_json, figure_data):
+    click_stations = json.loads(click_stations_json)
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(cruise, fig_map)
-    elif (dash.callback_context.triggered[0]['prop_id'] == 'map.clickData'):
-        fig = plot.update_map(hov_data, click_data, figure_data, cruise, fig_map)
     else:
-        fig = plot.update_map(hov_data, None, figure_data, cruise, fig_map)
+        fig = plot.update_map(click_stations, figure_data, cruise)
     return fig
 
 
