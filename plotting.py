@@ -54,6 +54,9 @@ def update_x_range(fig, x_range, cruise):
     return fig
 
 def update_legend(fig, cruise, hov_station, click_stations):
+    #print(hov_station)
+    #print(click_stations)
+
     if station.is_empty(hov_station) == False:
         fig['data'][0]['showlegend'] = True
         fig['data'][0]['name'] = str(hov_station.name) + '<br>lat: ' + str("{:.2f}".format(hov_station.lat)) \
@@ -70,23 +73,37 @@ def update_legend(fig, cruise, hov_station, click_stations):
         fig.update_layout(legend_title_text='<b>' + str(cruise) + '</b>' + '<br></br>Selected Stations:')
     return fig
 
+def clear_click_legend(fig):
+    for i in range(8):
+        fig['data'][6 + i * 6]['showlegend'] = False
+    return fig
+
+def clear_hover_legend(fig):
+    for i in range(8):
+        fig['data'][i * 6]['showlegend'] = False
+    return fig
+
 def clear_hover_traces(fig):
-    fig.data[0].update(x=[], y=[])
-    fig.data[1].update(x=[], y=[])
-    fig.data[2].update(x=[], y=[])
-    fig.data[3].update(x=[], y=[])
-    fig.data[4].update(x=[], y=[])
-    fig.data[5].update(x=[], y=[])
+    clear_hover_legend(fig)
+
+    fig.data[0].update(x=[None], y=[None])
+    fig.data[1].update(x=[None], y=[None])
+    fig.data[2].update(x=[None], y=[None])
+    fig.data[3].update(x=[None], y=[None])
+    fig.data[4].update(x=[None], y=[None])
+    fig.data[5].update(x=[None], y=[None])
     return fig
 
 def clear_click_traces(fig):
+    clear_click_legend(fig)
+
     for i in range(8):
-        fig.data[6 + i * 6].update(x=[], y=[])
-        fig.data[7 + i * 6].update(x=[], y=[])
-        fig.data[8 + i * 6].update(x=[], y=[])
-        fig.data[9 + i * 6].update(x=[], y=[])
-        fig.data[10 + i * 6].update(x=[], y=[])
-        fig.data[11 + i * 6].update(x=[], y=[])
+        fig.data[6 + i * 6].update(x=[None], y=[None])
+        fig.data[7 + i * 6].update(x=[None], y=[None])
+        fig.data[8 + i * 6].update(x=[None], y=[None])
+        fig.data[9 + i * 6].update(x=[None], y=[None])
+        fig.data[10 + i * 6].update(x=[None], y=[None])
+        fig.data[11 + i * 6].update(x=[None], y=[None])
     return fig
 
 #initialize the profiles
@@ -161,6 +178,8 @@ def switch_profiles(cruise, fig, x_range, y_range):
     return fig
 
 def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
+    fig = clear_hover_traces(fig)
+    fig = clear_click_traces(fig)
 
     if station.is_empty(hov_station) == False:
 
@@ -186,6 +205,7 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
 
         for i in range(8):
             if i < len(click_stations):
+
                 click_xvals_temp, click_yvals_temp = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Temperature')
                 click_xvals_sal, click_yvals_sal = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Salinity')
                 click_xvals_dens, click_yvals_dens = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Density')
@@ -202,12 +222,12 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
                 fig.data[11 + i * 6].update(x=click_xvals_ratio, y=click_yvals_ratio, marker_color=click_stations[i].colour)
 
             else:
-                fig.data[6 + i * 6].update(x=[], y=[])
-                fig.data[7 + i * 6].update(x=[], y=[])
-                fig.data[8 + i * 6].update(x=[], y=[])
-                fig.data[9 + i * 6].update(x=[], y=[])
-                fig.data[10 + i * 6].update(x=[], y=[])
-                fig.data[11 + i * 6].update(x=[], y=[])
+                fig.data[6 + i * 6].update(x=[None], y=[None])
+                fig.data[7 + i * 6].update(x=[None], y=[None])
+                fig.data[8 + i * 6].update(x=[None], y=[None])
+                fig.data[9 + i * 6].update(x=[None], y=[None])
+                fig.data[10 + i * 6].update(x=[None], y=[None])
+                fig.data[11 + i * 6].update(x=[None], y=[None])
 
 
     #display cruise info

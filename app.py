@@ -41,11 +41,11 @@ def station_dict(obj):
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
 server = Flask(__name__)
-app = dash.Dash(
-    server=server,
-    url_base_pathname=environ.get('JUPYTERHUB_SERVICE_PREFIX', '/'),
-    external_stylesheets=external_stylesheets
-)
+# app = dash.Dash(__name__,server=server,
+#                 requests_pathname_prefix='/ocgy/',
+#                 external_stylesheets=external_stylesheets)
+app = dash.Dash(__name__,server=server,
+                external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
 
@@ -105,6 +105,8 @@ app.layout = html.Div([
             value=initial_x_range
         ),
 
+        html.Button('Clear', id='clear_button')
+
     ], style={'width': '40%', 'display': 'inline-block', 'vertical-align': 'middle'}),
 
     html.Div([
@@ -157,9 +159,8 @@ app.layout = html.Div([
     dcc.Markdown(
         children=attributions_markdown
     ),
-    dcc.Store(id='hov_station',
-              data=json.dumps(initial_hov_station.__dict__)),
-    dcc.Store(id='click_stations', data=json.dumps(initial_click_stations, default=station_dict))
+    dcc.Store(id='hov_station', data=json.dumps(initial_hov_station.__dict__), storage_type='memory'),
+    dcc.Store(id='click_stations', data=json.dumps(initial_click_stations, default=station_dict), storage_type='memory')
 ], style={'width': '1000px'})
 
 
@@ -170,20 +171,32 @@ app.layout = html.Div([
 fig_map = plot.initialize_map(initial_cruise)
 fig_profiles = plot.initialize_profiles(initial_cruise, initial_x_range, initial_y_range)
 
+
 #stations
 @app.callback(
     Output(component_id='hov_station', component_property='data'),
     Input(component_id='map', component_property='hoverData'),
     Input(component_id='cruise', component_property='value'),
+    Input(component_id='hov_station', component_property='data'),
 )
-def update_hover_station(hov_data, cruise):
-    if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
+def update_hover_station(hov_data, cruise, hov_station_json):
+    if (hov_station_json == None) | (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         #clear hover
         hov_station = station.Station('hover', None, None, None, 'blue')
     else:
         hov_station = station.get_hov_station(hov_data)
 
     return json.dumps(hov_station.__dict__)
+
+
+@app.callback(
+    Output(component_id='click_stations', component_property='clear_data'),
+    Output(component_id='hov_station', component_property='clear_data'),
+    Input(component_id='clear_button', component_property='n_clicks'),
+)
+def clear_stations(n_clicks):
+    return True, True
+
 
 @app.callback(
     Output(component_id='click_stations', component_property='data'),
@@ -192,16 +205,20 @@ def update_hover_station(hov_data, cruise):
     Input(component_id='cruise', component_property='value'),
 )
 def update_click_stations(click_data, click_stations_json, cruise):
-    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+    if click_stations_json == None:
+        click_stations = []
+    else:
+        click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         # clear click stations
         click_stations = []
-    else:
+    elif (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'map'):
         click_stations = station.get_click_stations(click_data, click_stations)
-
+    #print(click_stations)
     return json.dumps(click_stations, default=station_dict)
 
-#Suplot graph
+#Subplot graph
 @app.callback(
     Output(component_id='profiles', component_property='figure'),
     Input(component_id='hov_station', component_property='data'),
@@ -213,6 +230,9 @@ def update_click_stations(click_data, click_stations_json, cruise):
 def update_profiles(hov_station_json, click_stations_json, cruise, x_range, y_range):
     hov_station = station.dict_to_station(json.loads(hov_station_json))
     click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+
+    #print(click_stations)
+    #print(hov_station.name)
 
     y_range[0] = abs(y_range[0])
     y_range[1] = abs(y_range[1])
