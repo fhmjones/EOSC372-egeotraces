@@ -17,36 +17,21 @@ def in_list(lat, lon, list):
 
 def remove_from_list(lat, lon, list):
     for s in list:
-        if (s.lat == lat) & (s.lon == lon):
+        if (s['lat'] == lat) & (s['lon'] == lon):
             list.remove(s)
     return list
 
 def is_empty(hov_station):
-    if (hov_station.lat == None) & (hov_station.lon == None) & (hov_station.name == None):
+    if (hov_station['lat'] == None) & (hov_station['lon'] == None) & (hov_station['name'] == None):
         return True
     else:
         return False
 
-def dict_to_station(dict):
-    station = Station(type=dict['type'], lat=dict['lat'], lon=dict['lon'], name=dict['name'], colour=dict['colour'])
-    return station
-
-def dict_list_to_station(dict_list):
-    station_list = []
-    for s in dict_list:
-        station_list.append(dict_to_station(s))
-    return station_list
-
-def station_list_to_dict(station_list):
-    dict_list = []
-    for s in station_list:
-        dict_list.append(s.__dict__)
-    return dict_list
 
 #colours
 def contains_colour(list_stations, colour):
     for s in list_stations:
-        if s.colour == colour:
+        if s['colour'] == colour:
             return True
     return False
 
@@ -58,14 +43,14 @@ def get_colour(click_stations): #getting the next colour in the series to plot
 
 #get lat and lons from hoverData
 def get_hov_station(hov_data):
-    hov_station = Station('hover', None, None, None, 'blue')
+    hov_station = Station('hover', None, None, None, 'blue').__dict__
     if hov_data is not None:
     # hovering over the clicked point doesn't give 'hovertext', so when there is no hovertext, set the hover data to the current click data
         if 'hovertext' in hov_data['points'][0]:
             lat = hov_data['points'][0]['lat']
             lon = hov_data['points'][0]['lon']
             name = str(hov_data['points'][0]['hovertext'])
-            hov_station = Station('hover', lat, lon, name, 'blue')
+            hov_station = Station('hover', lat, lon, name, 'blue').__dict__
     return hov_station
 
 #get lat and lons from clickData
@@ -81,5 +66,5 @@ def get_click_stations(click_data, click_stations):
             lat = click_data['points'][0]['lat']
             lon = click_data['points'][0]['lon']
             name = click_data['points'][0]['hovertext']
-            click_stations.append(Station('click', lat, lon, name, get_colour(click_stations)))
+            click_stations.append(Station('click', lat, lon, name, get_colour(click_stations)).__dict__)
     return click_stations

@@ -15,6 +15,8 @@ import json
 import dash
 from dash import dcc
 from dash import html
+#import dash_core_components as dcc
+#import dash_html_components as html
 from dash.dependencies import Input, Output
 
 import plotly.graph_objects as go
@@ -33,9 +35,6 @@ attributions_markdown = attributions.read()
 initial_cruise = 'GIPY0405'
 initial_y_range = [0, 500]
 initial_x_range = 'default'
-
-def station_dict(obj):
-    return obj.__dict__
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -174,16 +173,15 @@ app.layout = html.Div([
     Input(component_id='cruise', component_property='value'),
     Input(component_id='hov_station', component_property='data'),
 )
-def update_hover_station(hov_data, cruise, hov_station_json):
+def update_hover_station(hov_data, cruise, hov_station):
     #the right statement checks if the cruise was just switched. If the cruise is switched, we clear the hover.
-    if (hov_station_json == {}) | (hov_station_json == None) | (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
+    if (hov_station == {}) | (hov_station == None) | (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         #clear hover
-        hov_station = station.Station('hover', None, None, None, 'blue') #empty station
+        hov_station = station.Station('hover', None, None, None, 'blue').__dict__ #empty station
     else:
         hov_station = station.get_hov_station(hov_data)
 
-    return hov_station.__dict__
-    #return json.dumps(hov_station.__dict__) #return a json dict of the station to be stored
+    return hov_station
 
 
 # The clear button callback. Uses the dcc.Store 'clear_data' property to clear the stored information.
@@ -203,13 +201,10 @@ def clear_stations(n_clicks):
     Input(component_id='click_stations', component_property='data'),
     Input(component_id='cruise', component_property='value'),
 )
-def update_click_stations(click_data, click_stations_json, cruise):
+def update_click_stations(click_data, click_stations, cruise):
     #converting the inputed clicked_stations to a list of Station objects from a json.
-    if (click_stations_json == None) | (click_stations_json == {}):
+    if (click_stations == None) | (click_stations == {}):
         click_stations = []
-    else:
-        #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
-        click_stations = station.dict_list_to_station(click_stations_json)
 
     #if the cruise was just switched, we clear the clicked stations list
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
@@ -219,8 +214,7 @@ def update_click_stations(click_data, click_stations_json, cruise):
     elif (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'map'):
         click_stations = station.get_click_stations(click_data, click_stations)
 
-    #return json.dumps(click_stations, default=station_dict) #convert to json and return clicked_stations
-    return station.station_list_to_dict(click_stations)
+    return click_stations
 
 #Depth profiles
 @app.callback(
@@ -232,19 +226,12 @@ def update_click_stations(click_data, click_stations_json, cruise):
     Input(component_id='x_range', component_property='value'),
     Input(component_id='y_range', component_property='value')
 )
-def update_profiles(fig_profiles_dict, hov_station_json, click_stations_json, cruise, x_range, y_range):
+def update_profiles(fig_profiles_dict, hov_station, click_stations, cruise, x_range, y_range):
     if fig_profiles_dict == None:
         fig_profiles = plot.initialize_profiles(initial_cruise, initial_x_range, initial_y_range) #fig_profiles is the figure with depth profile subplots
     else:
         fig_profiles = make_subplots(rows=1, cols=6, subplot_titles=("<b>Temperature</b>", "<b>Salinity</b>", "<b>Sigma0*</b>", "<b>Nitrate</b>", "<b>Iron</b>", "<b>Nitrate/Iron</b>"))
         fig_profiles.update(data=fig_profiles_dict['data'], layout=fig_profiles_dict['layout'])
-        #fig_profiles = go.Figure(data=fig_profiles_dict['data'], layout=fig_profiles_dict['layout'])
-
-    #read in the jsons for hov_station and click_stations
-    #hov_station = station.dict_to_station(json.loads(hov_station_json))
-    hov_station = station.dict_to_station(hov_station_json)
-    #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
-    click_stations = station.dict_list_to_station(click_stations_json)
 
     #update the y_axis of the graph. Need to use absolute values for reasons stated above in the html for the y_range slider
     y_range[0] = abs(y_range[0])
@@ -267,15 +254,12 @@ def update_profiles(fig_profiles_dict, hov_station_json, click_stations_json, cr
     Input(component_id='click_stations', component_property='data'),
     Input(component_id='map', component_property='figure')
 )
-def update_map(fig_map_dict, cruise, click_stations_json, figure_data):
+def update_map(fig_map_dict, cruise, click_stations, figure_data):
     if fig_map_dict == None:
         fig_map = plot.initialize_map(initial_cruise)
     else:
         fig_map = go.Figure(data=fig_map_dict['data'], layout=fig_map_dict['layout'])
 
-    #read in the click_stations json
-    #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
-    click_stations = station.dict_list_to_station(click_stations_json)
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(cruise, fig_map)

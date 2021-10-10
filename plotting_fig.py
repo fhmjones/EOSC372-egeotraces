@@ -13,8 +13,6 @@ GIPY0405 = pd.concat([GIPY04, GIPY05], ignore_index=True) #merging the csv files
 
 
 ###SUBPLOTS PLOTTING
-
-
 def get_x_y_values(cruise, lat, lon, data_name):
     #getting the x and y values to plot the depth profile for a given parameter (data_name) at a given lat and lon
     if cruise == 'GIPY0405':
@@ -56,14 +54,14 @@ def update_x_range(fig, x_range, cruise):
 def update_legend(fig, cruise, hov_station, click_stations):
     if station.is_empty(hov_station) == False:
         fig.data[0]['showlegend'] = True
-        fig.data[0]['name'] = str(hov_station.name) + '<br>lat: ' + str("{:.2f}".format(hov_station.lat)) \
-                                 + '<br>lon: ' + str("{:.2f}".format(hov_station.lon))
+        fig.data[0]['name'] = str(hov_station['name']) + '<br>lat: ' + str("{:.2f}".format(hov_station['lat'])) \
+                                 + '<br>lon: ' + str("{:.2f}".format(hov_station['lon']))
     if (len(click_stations) != 0):
         for i in range(len(click_stations)):
             fig.data[6 + 6 * i]['showlegend'] = True
             for i in range(len(click_stations)):
-                fig.data[6 + 6 * i]['name'] = str(click_stations[i].name) + '<br>lat: ' + str("{:.2f}".format(click_stations[i].lat)) \
-                                         + '<br>lon: ' + str("{:.2f}".format(click_stations[i].lon))
+                fig.data[6 + 6 * i]['name'] = str(click_stations[i]['name']) + '<br>lat: ' + str("{:.2f}".format(click_stations[i]['lat'])) \
+                                         + '<br>lon: ' + str("{:.2f}".format(click_stations[i]['lon']))
     if cruise == 'GIPY0405':
         fig.update_layout(legend_title_text='<b>' + 'GIPY04 & GIPY05' + '</b>' + '<br></br>Selected Stations:')
     else:
@@ -180,12 +178,12 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
 
     if station.is_empty(hov_station) == False:
 
-        hov_xvals_temp, hov_yvals_temp = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Temperature')
-        hov_xvals_sal, hov_yvals_sal = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Salinity')
-        hov_xvals_dens, hov_yvals_dens = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Density')
-        hov_xvals_nit, hov_yvals_nit = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Nitrate')
-        hov_xvals_iron, hov_yvals_iron = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Iron')
-        hov_xvals_ratio, hov_yvals_ratio = get_x_y_values(cruise, hov_station.lat, hov_station.lon, 'Ratio')
+        hov_xvals_temp, hov_yvals_temp = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Temperature')
+        hov_xvals_sal, hov_yvals_sal = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Salinity')
+        hov_xvals_dens, hov_yvals_dens = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Density')
+        hov_xvals_nit, hov_yvals_nit = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Nitrate')
+        hov_xvals_iron, hov_yvals_iron = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Iron')
+        hov_xvals_ratio, hov_yvals_ratio = get_x_y_values(cruise, hov_station['lat'], hov_station['lon'], 'Ratio')
 
 
         fig.data[0].update(x=hov_xvals_temp, y=hov_yvals_temp)
@@ -199,24 +197,23 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
         fig = clear_hover_traces(fig)
 
     if len(click_stations) != 0:
-
         for i in range(8):
             if i < len(click_stations):
 
-                click_xvals_temp, click_yvals_temp = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Temperature')
-                click_xvals_sal, click_yvals_sal = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Salinity')
-                click_xvals_dens, click_yvals_dens = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Density')
-                click_xvals_nit, click_yvals_nit = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Nitrate')
-                click_xvals_iron, click_yvals_iron = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Iron')
-                click_xvals_ratio, click_yvals_ratio = get_x_y_values(cruise, click_stations[i].lat, click_stations[i].lon, 'Ratio')
+                click_xvals_temp, click_yvals_temp = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Temperature')
+                click_xvals_sal, click_yvals_sal = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Salinity')
+                click_xvals_dens, click_yvals_dens = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Density')
+                click_xvals_nit, click_yvals_nit = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Nitrate')
+                click_xvals_iron, click_yvals_iron = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Iron')
+                click_xvals_ratio, click_yvals_ratio = get_x_y_values(cruise, click_stations[i]['lat'], click_stations[i]['lon'], 'Ratio')
 
 
-                fig.data[6 + i * 6].update(x=click_xvals_temp, y=click_yvals_temp, marker_color=click_stations[i].colour)
-                fig.data[7 + i * 6].update(x=click_xvals_sal, y=click_yvals_sal, marker_color=click_stations[i].colour)
-                fig.data[8 + i * 6].update(x=click_xvals_dens, y=click_yvals_dens, marker_color=click_stations[i].colour)
-                fig.data[9 + i * 6].update(x=click_xvals_nit, y=click_yvals_nit, marker_color=click_stations[i].colour)
-                fig.data[10 + i * 6].update(x=click_xvals_iron, y=click_yvals_iron, marker_color=click_stations[i].colour)
-                fig.data[11 + i * 6].update(x=click_xvals_ratio, y=click_yvals_ratio, marker_color=click_stations[i].colour)
+                fig.data[6 + i * 6].update(x=click_xvals_temp, y=click_yvals_temp, marker_color=click_stations[i]['colour'])
+                fig.data[7 + i * 6].update(x=click_xvals_sal, y=click_yvals_sal, marker_color=click_stations[i]['colour'])
+                fig.data[8 + i * 6].update(x=click_xvals_dens, y=click_yvals_dens, marker_color=click_stations[i]['colour'])
+                fig.data[9 + i * 6].update(x=click_xvals_nit, y=click_yvals_nit, marker_color=click_stations[i]['colour'])
+                fig.data[10 + i * 6].update(x=click_xvals_iron, y=click_yvals_iron, marker_color=click_stations[i]['colour'])
+                fig.data[11 + i * 6].update(x=click_xvals_ratio, y=click_yvals_ratio, marker_color=click_stations[i]['colour'])
 
             else:
                 fig.data[6 + i * 6].update(x=[None], y=[None])
@@ -260,10 +257,10 @@ def plot_stations(cruise, click_stations):
     # adding markers from: https://plotly.com/python/scattermapbox/
     if (len(click_stations) != 0):
         for i in range(len(click_stations)):
-            fig.add_trace(go.Scattermapbox(lat=[click_stations[i].lat], lon=[click_stations[i].lon], showlegend=False,
-                                           hovertemplate="<b>" + str(click_stations[i].name) +
+            fig.add_trace(go.Scattermapbox(lat=[click_stations[i]['lat']], lon=[click_stations[i]['lon']], showlegend=False,
+                                           hovertemplate="<b>" + str(click_stations[i]['name']) +
                                                          "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
-                                           mode='markers', marker=go.scattermapbox.Marker(size=10, color=click_stations[i].colour)))
+                                           mode='markers', marker=go.scattermapbox.Marker(size=10, color=click_stations[i]['colour'])))
 
     return fig
 
