@@ -73,7 +73,6 @@ app.layout = html.Div([
     # checkboxes can be lumped together but then logic in "update_graph" is messier.
     # Content can be delivered using html, but markdown is simpler.
     html.Div([
-
         # choose the cruise
         dcc.Markdown('''
         **Select Cruise**
@@ -183,7 +182,8 @@ def update_hover_station(hov_data, cruise, hov_station_json):
     else:
         hov_station = station.get_hov_station(hov_data)
 
-    return json.dumps(hov_station.__dict__) #return a json dict of the station to be stored
+    return hov_station.__dict__
+    #return json.dumps(hov_station.__dict__) #return a json dict of the station to be stored
 
 
 # The clear button callback. Uses the dcc.Store 'clear_data' property to clear the stored information.
@@ -208,7 +208,8 @@ def update_click_stations(click_data, click_stations_json, cruise):
     if (click_stations_json == None) | (click_stations_json == {}):
         click_stations = []
     else:
-        click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+        #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+        click_stations = station.dict_list_to_station(click_stations_json)
 
     #if the cruise was just switched, we clear the clicked stations list
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
@@ -218,7 +219,8 @@ def update_click_stations(click_data, click_stations_json, cruise):
     elif (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'map'):
         click_stations = station.get_click_stations(click_data, click_stations)
 
-    return json.dumps(click_stations, default=station_dict) #convert to json and return clicked_stations
+    #return json.dumps(click_stations, default=station_dict) #convert to json and return clicked_stations
+    return station.station_list_to_dict(click_stations)
 
 #Depth profiles
 @app.callback(
@@ -239,8 +241,10 @@ def update_profiles(fig_profiles_dict, hov_station_json, click_stations_json, cr
         #fig_profiles = go.Figure(data=fig_profiles_dict['data'], layout=fig_profiles_dict['layout'])
 
     #read in the jsons for hov_station and click_stations
-    hov_station = station.dict_to_station(json.loads(hov_station_json))
-    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+    #hov_station = station.dict_to_station(json.loads(hov_station_json))
+    hov_station = station.dict_to_station(hov_station_json)
+    #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+    click_stations = station.dict_list_to_station(click_stations_json)
 
     #update the y_axis of the graph. Need to use absolute values for reasons stated above in the html for the y_range slider
     y_range[0] = abs(y_range[0])
@@ -270,7 +274,8 @@ def update_map(fig_map_dict, cruise, click_stations_json, figure_data):
         fig_map = go.Figure(data=fig_map_dict['data'], layout=fig_map_dict['layout'])
 
     #read in the click_stations json
-    click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+    #click_stations = station.dict_list_to_station(json.loads(click_stations_json))
+    click_stations = station.dict_list_to_station(click_stations_json)
     # switch map is called when we switch cruises, update map is called for other updates.
     if (dash.callback_context.triggered[0]['prop_id'].split('.')[0] == 'cruise'):
         fig = plot.switch_map(cruise, fig_map)

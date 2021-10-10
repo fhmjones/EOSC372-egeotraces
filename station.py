@@ -37,6 +37,12 @@ def dict_list_to_station(dict_list):
         station_list.append(dict_to_station(s))
     return station_list
 
+def station_list_to_dict(station_list):
+    dict_list = []
+    for s in station_list:
+        dict_list.append(s.__dict__)
+    return dict_list
+
 #colours
 def contains_colour(list_stations, colour):
     for s in list_stations:
