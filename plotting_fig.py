@@ -54,18 +54,15 @@ def update_x_range(fig, x_range, cruise):
     return fig
 
 def update_legend(fig, cruise, hov_station, click_stations):
-    #print(hov_station)
-    #print(click_stations)
-
     if station.is_empty(hov_station) == False:
-        fig['data'][0]['showlegend'] = True
-        fig['data'][0]['name'] = str(hov_station.name) + '<br>lat: ' + str("{:.2f}".format(hov_station.lat)) \
+        fig.data[0]['showlegend'] = True
+        fig.data[0]['name'] = str(hov_station.name) + '<br>lat: ' + str("{:.2f}".format(hov_station.lat)) \
                                  + '<br>lon: ' + str("{:.2f}".format(hov_station.lon))
     if (len(click_stations) != 0):
         for i in range(len(click_stations)):
-            fig['data'][6 + 6 * i]['showlegend'] = True
+            fig.data[6 + 6 * i]['showlegend'] = True
             for i in range(len(click_stations)):
-                fig['data'][6 + 6 * i]['name'] = str(click_stations[i].name) + '<br>lat: ' + str("{:.2f}".format(click_stations[i].lat)) \
+                fig.data[6 + 6 * i]['name'] = str(click_stations[i].name) + '<br>lat: ' + str("{:.2f}".format(click_stations[i].lat)) \
                                          + '<br>lon: ' + str("{:.2f}".format(click_stations[i].lon))
     if cruise == 'GIPY0405':
         fig.update_layout(legend_title_text='<b>' + 'GIPY04 & GIPY05' + '</b>' + '<br></br>Selected Stations:')
@@ -75,12 +72,12 @@ def update_legend(fig, cruise, hov_station, click_stations):
 
 def clear_click_legend(fig):
     for i in range(8):
-        fig['data'][6 + i * 6]['showlegend'] = False
+        fig.data[6 + i * 6]['showlegend'] = False
     return fig
 
 def clear_hover_legend(fig):
     for i in range(8):
-        fig['data'][i * 6]['showlegend'] = False
+        fig.data[i * 6]['showlegend'] = False
     return fig
 
 def clear_hover_traces(fig):
@@ -276,9 +273,9 @@ def initialize_map(cruise):
     fig = plot_stations(cruise, []) #***
 
     if cruise == 'GIPY0405':
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+        fig.update_layout(title = 'GIPY04 and GIPY05', margin={"r": 0, "t": 40, "l": 0, "b": 0})
     else:
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+        fig.update_layout(title=cruise, margin={"r": 0, "t": 40, "l": 0, "b": 0})
 
     return fig
 
@@ -288,9 +285,9 @@ def switch_map(cruise, fig):
     fig = plot_stations(cruise, [])
 
     if cruise == 'GIPY0405':
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+        fig.update_layout(title='GIPY04 and GIPY05', margin={"r": 0, "t": 40, "l": 0, "b": 0})
     else:
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+        fig.update_layout(title=cruise, margin={"r": 0, "t": 40, "l": 0, "b": 0})
 
     return fig
 
@@ -301,9 +298,9 @@ def update_map(click_stations, figure_data, cruise):
     if figure_data is not None: #set map layout to its previous settings, so the zoom and position doesn't reset
         fig.layout['mapbox'] = figure_data['layout']['mapbox']
 
-
     if cruise == 'GIPY0405':
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title='GIPY04 and GIPY05')
+        fig.update_layout(title='GIPY04 and GIPY05', margin={"r": 0, "t": 40, "l": 0, "b": 0})
     else:
-        fig.update_layout(margin={"r": 0, "t": 40, "l": 0, "b": 0}, title=cruise)
+        fig.update_layout(title=cruise, margin={"r": 0, "t": 40, "l": 0, "b": 0})
+
     return fig

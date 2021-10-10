@@ -9,3 +9,4 @@ share
 __pycache__
 student_data_full.xlsx
 student_data.xlsx
+plotting_dict.py
