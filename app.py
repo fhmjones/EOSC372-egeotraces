@@ -9,8 +9,6 @@
 
 
 from flask import Flask
-from os import environ
-import json
 
 import dash
 from dash import dcc
@@ -231,7 +229,7 @@ def update_hover_station(hov_data, cruise, hov_station):
     # the right statement checks if the cruise was just switched. If the cruise is switched, we clear the hover.
     if (
         (hov_station == {})
-        | (hov_station == None)
+        | (hov_station is None)
         | (dash.callback_context.triggered[0]["prop_id"].split(".")[0] == "cruise")
     ):
         # clear hover
@@ -263,7 +261,7 @@ def clear_stations(n_clicks):
 )
 def update_click_stations(click_data, click_stations, cruise):
     # converting the inputed clicked_stations to a list of Station objects from a json.
-    if (click_stations == None) | (click_stations == {}):
+    if (click_stations is None) | (click_stations == {}):
         click_stations = []
 
     # if the cruise was just switched, we clear the clicked stations list
@@ -290,7 +288,7 @@ def update_click_stations(click_data, click_stations, cruise):
 def update_profiles(
     fig_profiles_dict, hov_station, click_stations, cruise, x_range, y_range
 ):
-    if fig_profiles_dict == None:
+    if fig_profiles_dict is None:
         fig_profiles = plot.initialize_profiles(
             initial_cruise, initial_x_range, initial_y_range
         )  # fig_profiles is the figure with depth profile subplots
@@ -334,7 +332,7 @@ def update_profiles(
     Input(component_id="map", component_property="figure"),
 )
 def update_map(fig_map_dict, cruise, click_stations, figure_data):
-    if fig_map_dict == None:
+    if fig_map_dict is None:
         fig_map = plot.initialize_map(initial_cruise)
     else:
         fig_map = go.Figure(data=fig_map_dict["data"], layout=fig_map_dict["layout"])

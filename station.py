@@ -35,9 +35,9 @@ def remove_from_list(lat, lon, list):
 
 def is_empty(hov_station):
     if (
-        (hov_station["lat"] == None)
-        & (hov_station["lon"] == None)
-        & (hov_station["name"] == None)
+        (hov_station["lat"] is None)
+        & (hov_station["lon"] is None)
+        & (hov_station["name"] is None)
     ):
         return True
     else:
@@ -54,7 +54,7 @@ def contains_colour(list_stations, colour):
 
 def get_colour(click_stations):  # getting the next colour in the series to plot
     for c in colours:
-        if contains_colour(click_stations, c) == False:
+        if contains_colour(click_stations, c) is False:
             return c
     return "black"
 

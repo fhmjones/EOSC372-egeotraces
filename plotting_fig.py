@@ -14,7 +14,7 @@ GIPY0405 = pd.concat(
 )  # merging the csv files for GIPY04 and GIPY05
 
 
-###SUBPLOTS PLOTTING
+# SUBPLOTS PLOTTING
 def get_x_y_values(cruise, lat, lon, data_name):
     # getting the x and y values to plot the depth profile for a given parameter (data_name) at a given lat and lon
     if cruise == "GIPY0405":
@@ -64,7 +64,7 @@ def update_x_range(fig, x_range, cruise):
 
 
 def update_legend(fig, cruise, hov_station, click_stations):
-    if station.is_empty(hov_station) == False:
+    if station.is_empty(hov_station) is False:
         fig.data[0]["showlegend"] = True
         fig.data[0]["name"] = (
             str(hov_station["name"])
@@ -227,7 +227,7 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
     fig = clear_hover_traces(fig)
     fig = clear_click_traces(fig)
 
-    if station.is_empty(hov_station) == False:
+    if station.is_empty(hov_station) is False:
 
         hov_xvals_temp, hov_yvals_temp = get_x_y_values(
             cruise, hov_station["lat"], hov_station["lon"], "Temperature"
@@ -343,7 +343,7 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
     return fig
 
 
-###MAP PLOTTING
+# MAP PLOTTING
 
 
 def plot_stations(cruise, click_stations):
