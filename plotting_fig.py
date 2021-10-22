@@ -1,7 +1,8 @@
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import pandas as pd
+
 import station
 
 # see Python routine "parse-csv.py" for the method of filtering data and making these csv files

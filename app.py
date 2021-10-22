@@ -8,15 +8,13 @@
 # Mapmaking code initially learned from https://plotly.com/python/mapbox-layers/.
 
 
-from flask import Flask
-
 import dash
-from dash import dcc
-from dash import html
-from dash.dependencies import Input, Output
-
 import plotly.graph_objects as go
+from dash import dcc, html
+from dash.dependencies import Input, Output
+from flask import Flask
 from plotly.subplots import make_subplots
+
 import plotting_fig as plot
 import station
 
