@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-
+# This is the main file the app is run from.
 # Run this app with `python app.py` and visit http://127.0.0.1:8050/ in your web browser.
 # documentation at https://dash.plotly.com/
+
 # based on ideas at "Dash App With Multiple Inputs" in https://dash.plotly.com/basic-callbacks
 # mouse-over or 'hover' behavior is based on https://dash.plotly.com/interactive-graphing
 # plotly express line parameters via https://plotly.com/python-api-reference/generated/plotly.express.line.html#plotly.express.line
@@ -15,7 +15,7 @@ from dash.dependencies import Input, Output
 from flask import Flask
 from plotly.subplots import make_subplots
 
-import plotting_fig as plot
+import plotting as plot
 import station
 
 # load markdown
@@ -216,7 +216,7 @@ app.layout = html.Div(
 @app.callback(
     Output(
         component_id="hov_station", component_property="data"
-    ),  # we output a json to the dcc.Store variable 'hov_station'
+    ),  # we output to the dcc.Store variable 'hov_station'
     Input(
         component_id="map", component_property="hoverData"
     ),  # the hover data from the map, which tells us which station the mouse is hovering over
@@ -224,7 +224,7 @@ app.layout = html.Div(
     Input(component_id="hov_station", component_property="data"),
 )
 def update_hover_station(hov_data, cruise, hov_station):
-    # the right statement checks if the cruise was just switched. If the cruise is switched, we clear the hover.
+    # the 'dash.callback_context.triggered' statement checks if the cruise was just switched. If the cruise is switched, we clear the hover.
     if (
         (hov_station == {})
         | (hov_station is None)
