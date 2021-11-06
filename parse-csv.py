@@ -78,27 +78,14 @@ def add_ratio_data(cruise_data):
     averaged_nitrate = []
 
     for index, row in cruise_data.iterrows():
-        if row['Iron'] is None:
-            ratio.append(None)
-        else:
-            nitrate = get_nitrate(cruise_data, index, row)
-            averaged_nitrate.append(nitrate)
-            #ratio.append(nitrate / row['Iron'])
+        nitrate = get_nitrate(cruise_data, index, row)
+        averaged_nitrate.append(nitrate)
+        #ratio.append(nitrate / row['Iron'])
 
     ratio = np.array(averaged_nitrate)/cruise_data['Iron']
     cruise_data['Averaged Nitrate'] = averaged_nitrate
     cruise_data['Ratio'] = ratio
 
-
-
-'''    
-def add_ratio_data(cruise_data):
-    nit = cruise_data['Nitrate']
-    iron = cruise_data['Iron']
-    ratio = nit / iron
-
-    cruise_data['Ratio'] = ratio
-'''
 
 def add_density_data(cruise_data):
     #from: http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html
