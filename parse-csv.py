@@ -119,6 +119,18 @@ GA03 = remove_empty_data(GA03)
 GA03 = GA03[(GA03.Depth <= 500)]
 GA03['Date'] = GA03.Date.str.split('T').str[0]
 
+'''
+GA03 = GA03[(GA03.Station == 'Station 10') & (GA03.Longitude < 310)]['Station'] + 'W'
+GA03 = GA03[(GA03.Station == 'Station 11') & (GA03.Longitude < 310)]['Station'] + 'W'
+GA03 = GA03[(GA03.Station == 'Station 10') & (GA03.Longitude > 310)]['Station'] + 'E'
+GA03 = GA03[(GA03.Station == 'Station 11') & (GA03.Longitude > 310)]['Station'] + 'E'
+'''
+
+GA03['Station'][(GA03.Station == 'Station 10') & (GA03.Longitude < 310)] = GA03['Station'][(GA03.Station == 'Station 10') & (GA03.Longitude < 310)].astype(str) + 'W'
+GA03['Station'][(GA03.Station == 'Station 11') & (GA03.Longitude < 310)] = GA03['Station'][(GA03.Station == 'Station 11') & (GA03.Longitude < 310)].astype(str) + 'W'
+GA03['Station'][(GA03.Station == 'Station 10') & (GA03.Longitude > 310)] = GA03['Station'][(GA03.Station == 'Station 10') & (GA03.Longitude > 310)].astype(str) + 'E'
+GA03['Station'][(GA03.Station == 'Station 11') & (GA03.Longitude > 310)] = GA03['Station'][(GA03.Station == 'Station 11') & (GA03.Longitude > 310)].astype(str) + 'E'
+
 stations = []
 positions = []
 for i in range(len(GA03)):

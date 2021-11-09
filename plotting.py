@@ -360,7 +360,7 @@ def plot_stations(cruise, click_stations):
             lon="Longitude",
             #hover_name="Station",
             # hover_data={"Date"},
-            custom_data={"Station", "Date"},
+            custom_data=["Station", "Date"],
             color_discrete_sequence=["blue"],
             zoom=1.2,
             center=dict(lat=-50, lon=0),
@@ -370,7 +370,7 @@ def plot_stations(cruise, click_stations):
             GA03,
             lat="Latitude",
             lon="Longitude",
-            custom_data={"Station", "Date"},
+            custom_data=["Station", "Date"],
             color_discrete_sequence=["blue"],
             zoom=1.2,
         )
@@ -379,7 +379,7 @@ def plot_stations(cruise, click_stations):
             GP02,
             lat="Latitude",
             lon="Longitude",
-            custom_data={"Station", "Date"},
+            custom_data=["Station", "Date"],
             color_discrete_sequence=["blue"],
             zoom=1.2,
         )
