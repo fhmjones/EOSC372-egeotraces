@@ -73,6 +73,8 @@ def update_legend(fig, cruise, hov_station, click_stations):
             + str("{:.2f}".format(hov_station["lat"]))
             + "<br>lon: "
             + str("{:.2f}".format(hov_station["lon"]))
+            + "<br>date: "
+            + str(hov_station["date"])
         )
     if len(click_stations) != 0:
         for i in range(len(click_stations)):
@@ -84,6 +86,8 @@ def update_legend(fig, cruise, hov_station, click_stations):
                     + str("{:.2f}".format(click_stations[i]["lat"]))
                     + "<br>lon: "
                     + str("{:.2f}".format(click_stations[i]["lon"]))
+                    + "<br>date: "
+                    + str(click_stations[i]["date"])
                 )
     if cruise == "GIPY0405":
         fig.update_layout(
@@ -349,11 +353,14 @@ def update_profiles(hov_station, click_stations, cruise, fig, x_range, y_range):
 
 def plot_stations(cruise, click_stations):
     if cruise == "GIPY0405":
+        #hover text formatting: https://plotly.com/python/hover-text-and-formatting/
         fig = px.scatter_mapbox(
             GIPY0405,
             lat="Latitude",
             lon="Longitude",
-            hover_name="Station",
+            #hover_name="Station",
+            # hover_data={"Date"},
+            custom_data={"Station", "Date"},
             color_discrete_sequence=["blue"],
             zoom=1.2,
             center=dict(lat=-50, lon=0),
@@ -363,7 +370,7 @@ def plot_stations(cruise, click_stations):
             GA03,
             lat="Latitude",
             lon="Longitude",
-            hover_name="Station",
+            custom_data={"Station", "Date"},
             color_discrete_sequence=["blue"],
             zoom=1.2,
         )
@@ -372,10 +379,11 @@ def plot_stations(cruise, click_stations):
             GP02,
             lat="Latitude",
             lon="Longitude",
-            hover_name="Station",
+            custom_data={"Station", "Date"},
             color_discrete_sequence=["blue"],
             zoom=1.2,
         )
+    fig.update_traces(hovertemplate="<b>%{customdata[0]}</b><br>lat: %{lat}<br>lon: %{lon}<br>date: %{customdata[1]}")
     fig.update_layout(mapbox_style="open-street-map")
 
     # adding markers from: https://plotly.com/python/scattermapbox/
@@ -388,7 +396,7 @@ def plot_stations(cruise, click_stations):
                     showlegend=False,
                     hovertemplate="<b>"
                     + str(click_stations[i]["name"])
-                    + "</b><br><br>Latitude=%{lat} </br> Longitude=%{lon}<extra></extra>",
+                    + "</b><br>lat:%{lat} </br> lon:%{lon}</br> date:"+ str(click_stations[i]["date"]) + "<extra></extra>",
                     mode="markers",
                     marker=go.scattermapbox.Marker(
                         size=10, color=click_stations[i]["colour"]

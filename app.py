@@ -232,7 +232,7 @@ def update_hover_station(hov_data, cruise, hov_station):
     ):
         # clear hover
         hov_station = station.Station(
-            "hover", None, None, None, "blue"
+            "hover", None, None, None, None, "blue"
         ).__dict__  # empty station
     else:
         hov_station = station.get_hov_station(hov_data)
