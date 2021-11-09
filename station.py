@@ -72,6 +72,7 @@ def get_hov_station(hov_data):
             name = str(hov_data["points"][0]["customdata"][0])
             date = str(hov_data["points"][0]["customdata"][1])
             hov_station = Station("hover", lat, lon, name, date, "blue").__dict__
+
     return hov_station
 
 

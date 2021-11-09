@@ -117,6 +117,7 @@ add_ratio_data(GA03)
 add_density_data(GA03)
 GA03 = remove_empty_data(GA03)
 GA03 = GA03[(GA03.Depth <= 500)]
+GA03['Date'] = GA03.Date.str.split('T').str[0]
 
 stations = []
 positions = []
@@ -130,7 +131,6 @@ for i in range(len(GA03)):
 # print(stations)
 for i in [4]:  # choosing specific profiles
     GA03 = GA03.drop(GA03[(GA03.Latitude == positions[i][0]) & (GA03.Longitude == positions[i][1])].index)
-GA03['Date'] = GA03.Date.str.split('T').str[0]
 GA03.to_csv('./data/GA03_filtered.csv', index=False)
 
 # make GIPY05 dataframe and csv
@@ -145,6 +145,7 @@ add_ratio_data(GIPY05)
 add_density_data(GIPY05)
 GIPY05 = remove_empty_data(GIPY05)
 GIPY05 = GIPY05[(GIPY05.Depth <= 500)]
+GIPY05['Date'] = GIPY05.Date.str.split('T').str[0]
 
 positions = []
 stations = []
@@ -155,10 +156,9 @@ for i in range(len(GIPY05)):
     if len(positions) == 0 or [lat, lon] != positions[-1]:
         positions.append([lat, lon])
         stations.append(station)
-# print(stations)
-# for i in []: #choosing specific profiles
-#        GIPY05 = GIPY05.drop(GIPY05[(GIPY05.Latitude == positions[i][0]) & (GIPY05.Longitude == positions[i][1])].index)
-GIPY05['Date'] = GIPY05.Date.str.split('T').str[0]
+#print(stations)
+for i in [0]: #choosing specific profiles
+        GIPY05 = GIPY05.drop(GIPY05[(GIPY05.Latitude == positions[i][0]) & (GIPY05.Longitude == positions[i][1])].index)
 GIPY05.to_csv('./data/GIPY05_filtered.csv', index=False)
 
 # make GP02 dataframe and csv
@@ -173,6 +173,7 @@ add_ratio_data(GP02)
 add_density_data(GP02)
 GP02 = remove_empty_data(GP02)
 GP02 = GP02[(GP02.Depth <= 500)]
+GP02['Date'] = GP02.Date.str.split('T').str[0]
 
 positions = []
 stations = []
@@ -186,7 +187,6 @@ for i in range(len(GP02)):
 # print(stations)
 # for i in []: #choosing specific profiles
 #        GP02 = GP02.drop(GP02[(GP02.Latitude == positions[i][0]) & (GP02.Longitude == positions[i][1])].index)
-GP02['Date'] = GP02.Date.str.split('T').str[0]
 GP02.to_csv('./data/GP02_filtered.csv', index=False)
 
 # make GIPY04 dataframe and csv
@@ -201,6 +201,7 @@ add_ratio_data(GIPY04)
 add_density_data(GIPY04)
 GIPY04 = remove_empty_data(GIPY04)
 GIPY04 = GIPY04[(GIPY04.Depth <= 500)]
+GIPY04['Date'] = GIPY04.Date.str.split('T').str[0]
 
 positions = []
 stations = []
@@ -214,5 +215,4 @@ for i in range(len(GIPY04)):
 # print(stations)
 for i in [0, 2, 4]:  # choosing specific profiles
     GIPY04 = GIPY04.drop(GIPY04[(GIPY04.Latitude == positions[i][0]) & (GIPY04.Longitude == positions[i][1])].index)
-GIPY04['Date'] = GIPY04.Date.str.split('T').str[0]
 GIPY04.to_csv('./data/GIPY04_filtered.csv', index=False)
