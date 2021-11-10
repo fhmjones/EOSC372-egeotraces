@@ -1,10 +1,14 @@
+# This file contains any station functions. These are functions relating to the clicked stations and hover stations.
+# This file is used by the plotting file.
+
+# These are the colours and colour order of the clicked stations
 colours = [
     "red",
-    "darkviolet",
-    "limegreen",
-    "darkred",
-    "darkorange",
     "deeppink",
+    "limegreen",
+    "darkorange",
+    "darkviolet",
+    "darkred",
     "darkgreen",
     "cyan",
 ]
@@ -20,13 +24,7 @@ class Station:
         self.colour = colour
 
 
-def in_list(lat, lon, list):
-    for s in list:
-        if (s.lat == lat) & (s.lon == lon):
-            return True
-    return False
-
-
+# remove a station from a list of stations
 def remove_from_list(lat, lon, list):
     for s in list:
         if (s["lat"] == lat) & (s["lon"] == lon):
@@ -34,6 +32,7 @@ def remove_from_list(lat, lon, list):
     return list
 
 
+# check if a hover station is empty
 def is_empty(hov_station):
     if (
         (hov_station["lat"] is None)
@@ -46,7 +45,7 @@ def is_empty(hov_station):
         return False
 
 
-# colours
+# check if there is a station that already has the given colour
 def contains_colour(list_stations, colour):
     for s in list_stations:
         if s["colour"] == colour:
@@ -54,7 +53,8 @@ def contains_colour(list_stations, colour):
     return False
 
 
-def get_colour(click_stations):  # getting the next colour in the series to plot
+# getting the next colour in the series to plot
+def get_colour(click_stations):
     for c in colours:
         if contains_colour(click_stations, c) is False:
             return c
@@ -69,8 +69,8 @@ def get_hov_station(hov_data):
         if "customdata" in hov_data["points"][0]:
             lat = hov_data["points"][0]["lat"]
             lon = hov_data["points"][0]["lon"]
-            name = str(hov_data["points"][0]["customdata"][0])
-            date = str(hov_data["points"][0]["customdata"][1])
+            name = str(hov_data["points"][0]["customdata"][0])  # station name
+            date = str(hov_data["points"][0]["customdata"][1])  # date
             hov_station = Station("hover", lat, lon, name, date, "blue").__dict__
 
     return hov_station
@@ -88,10 +88,12 @@ def get_click_stations(click_data, click_stations):
         else:
             lat = click_data["points"][0]["lat"]
             lon = click_data["points"][0]["lon"]
-            name = click_data["points"][0]["customdata"][0]
-            date = str(click_data["points"][0]["customdata"][1])
+            name = click_data["points"][0]["customdata"][0]  # station name
+            date = str(click_data["points"][0]["customdata"][1])  # date
             click_stations.append(
-                Station("click", lat, lon, name, date, get_colour(click_stations)).__dict__
+                Station(
+                    "click", lat, lon, name, date, get_colour(click_stations)
+                ).__dict__
             )
 
     return click_stations

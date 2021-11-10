@@ -1,4 +1,5 @@
-# This is the main file the app is run from.
+# This is the main file the app is run from. This file has the dash structure and callbacks.
+
 # Run this app with `python app.py` and visit http://127.0.0.1:8050/ in your web browser.
 # documentation at https://dash.plotly.com/
 
@@ -18,7 +19,7 @@ from plotly.subplots import make_subplots
 import plotting as plot
 import station
 
-# load markdown
+# load markdown for instructions and sources
 instructions = open("instructions.md", "r")
 instructions_markdown = instructions.read()
 
@@ -42,9 +43,9 @@ app.layout = html.Div(
             # using the instructions markdown file that was loaded in above
             children=instructions_markdown
         ),
-        # This is the plot with the map of cruise stations
         html.Div(
             [
+                # This is the plot with the map of cruises and stations
                 dcc.Graph(
                     id="map",
                     config={
@@ -69,12 +70,8 @@ app.layout = html.Div(
                 "margin-left": 20,
             },
         ),
-        # slider or checklist details at https://dash.plotly.com/dash-core-components
-        # checkboxes can be lumped together but then logic in "update_graph" is messier.
-        # Content can be delivered using html, but markdown is simpler.
         html.Div(
             [
-                # choose the cruise
                 dcc.Markdown(
                     """
         **Select Cruise**
@@ -194,6 +191,7 @@ app.layout = html.Div(
             },
         ),
         dcc.Markdown(
+            # notes on the data, displayed under the depth profiles.
             """
             *Density, Sigma0, is potential density anomaly, or potential density minus 1000 kg/m\u00B3. [Reference](http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html).
             
@@ -207,6 +205,7 @@ app.layout = html.Div(
         # Using dcc.Store (https://dash.plotly.com/dash-core-components/store) to store values of the hover station and the clicked stations
         # The hov_station is the station currently being hovered over by the mouse. clicked_stations is a list of stations
         # that were clicked and should be plotted. dcc.Store stores a variable as a json, and then it can be accessed through a callback.
+        # dcc.Store is an alternative to using global variables, since global variables don't work with Dash when there are concurrent users.
         dcc.Store(id="hov_station", data={}, storage_type="memory"),
         dcc.Store(id="click_stations", data={}, storage_type="memory"),
     ],
@@ -288,11 +287,11 @@ def update_click_stations(click_data, click_stations, cruise):
 def update_profiles(
     fig_profiles_dict, hov_station, click_stations, cruise, x_range, y_range
 ):
-    if fig_profiles_dict is None:
+    if fig_profiles_dict is None:  # if the figure is empty, we initialize it
         fig_profiles = plot.initialize_profiles(
             initial_cruise, initial_x_range, initial_y_range
         )  # fig_profiles is the figure with depth profile subplots
-    else:
+    else:  # otherwise we make a new figure and give it the data and layout from the inputed figure dictionary. This converts a dict to a figure.
         fig_profiles = make_subplots(
             rows=1,
             cols=6,
@@ -332,9 +331,9 @@ def update_profiles(
     Input(component_id="map", component_property="figure"),
 )
 def update_map(fig_map_dict, cruise, click_stations, figure_data):
-    if fig_map_dict is None:
+    if fig_map_dict is None:  # if the figure doesn't exist yet, we initialize it
         fig_map = plot.initialize_map(initial_cruise)
-    else:
+    else:  # otherwise we convert our figure dictionary to a Figure
         fig_map = go.Figure(data=fig_map_dict["data"], layout=fig_map_dict["layout"])
 
     # switch map is called when we switch cruises, update map is called for other updates.
