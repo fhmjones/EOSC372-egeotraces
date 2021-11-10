@@ -13,7 +13,7 @@
 - The new .txt is converted to a csv using Excel
 
 ## Filtering the Data
-- The data file downloaded gave the entire GIPY05 cruise, so I manually removed stations so the file only contained GIPY05e. Similarly with the other cruises
+- The data file downloaded gave the entire GIPY05 cruise, so I manually removed stations so the file only contained GIPY05e. Similarly with the other cruises.
 - I used pandas to create filtered versions of the csv files for each cruise. The filtering process:
     - Selects data within a specified latitude and longitude range
     - Removes stations with no iron data
@@ -22,8 +22,9 @@
     - Creates a column and adds the ratio data
     - Creates a column and adds the density data
     - Removes specific stations that have been indicated
+    - Removes specific data points that have been indicated
 
 ## Calculated Data
 The ratio and density data were both calculated. 
-- The ratio data is calculated by changing the units of nitrate to be the same as the iron, and then dividing nitrate by iron. This performs the calculation for points where nitrate and iron are both measured at the same exact depth.
+- The ratio data could not be calculated simply by dividing nitrate by iron, since there were not enough data calculate at the same depth. Instead an average nitrate value was calculated first. This is the average of nitrate for +/- 5m for values <= 100m depth, and +/- 10m for values > 100m depth. This averaged nitrate is then divided by iron to produce the ratio column.
 - The density data is calculated using the [gsw library](http://www.teos-10.org/pubs/gsw/html/gsw_contents.html). Potential density anomoly is calculated using the `gsw.sigma0` function which takes in absolute salinity and temperature. The salinity from the original data is potential salinity, so the `gsw.SA_from_SP` function was used to get absolute salinity from potential salinity first. 
