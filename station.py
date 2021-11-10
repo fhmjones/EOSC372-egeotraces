@@ -4,13 +4,12 @@
 # These are the colours and colour order of the clicked stations
 colours = [
     "red",
-    "deeppink",
+    "darkviolet",
     "limegreen",
     "darkorange",
-    "darkviolet",
+    "deeppink",
     "darkred",
     "darkgreen",
-    "cyan",
 ]
 
 
