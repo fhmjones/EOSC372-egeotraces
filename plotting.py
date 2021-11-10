@@ -154,7 +154,7 @@ def initialize_profiles(cruise, x_range, y_range):
             "<b>Sigma0*</b>",
             "<b>Nitrate</b>",
             "<b>Iron</b>",
-            "<b>Nitrate/Iron</b>",
+            "<b>Nitrate/Iron**</b>",
         ),
     )
 

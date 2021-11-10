@@ -71,15 +71,6 @@ def add_density_data(cruise_data):
 
     cruise_data['Density'] = sigma0
 
-'''
-def add_test_density_data(cruise_data):
-    practical_salinity = cruise_data['Salinity']
-    temperature = cruise_data['Temperature']
-    sigma0 = gsw.sigma0(practical_salinity, temperature)
-
-    cruise_data['Density'] = sigma0
-'''
-
 # read in original data
 GA03_data = pd.read_csv("./data/GA03w.csv")
 GIPY05_data = pd.read_csv("./data/GIPY05e.csv")
@@ -89,23 +80,8 @@ GIPY04_data = pd.read_csv("./data/GIPY04.csv")
 
 headers = ['Station', 'Date', 'Latitude', 'Longitude', 'Depth', 'Temperature', 'Salinity', 'Nitrate', 'Iron', 'Pressure']
 
-'''
-#make TEST dataframe
-data = [TEST_data['Station'], TEST_data['Latitude [degrees_north]'], TEST_data['Longitude [degrees_east]'],
-        TEST_data['DEPTH [m]'], TEST_data['CTDTMP [deg C]'], TEST_data['CTDSAL'], TEST_data['NO2+NO3_D_CONC_BOTTLE [umol/kg]'],
-        TEST_data['Fe_D_CONC_BOTTLE [nmol/kg]'], TEST_data['PRESSURE [dbar]']]
-TEST = pd.concat(data, axis=1, keys=headers)
-add_density_data(TEST)
-TEST.to_csv('TEST_filtered.csv', index=False)
-'''
-
 
 # make GA03 dataframe and csv
-'''
-data = [GA03_data['Station'], GA03_data['Latitude [degrees_north]'], GA03_data['Longitude [degrees_east]'],
-        GA03_data['DEPTH [m]'], GA03_data['CTDTMP [deg C]'], GA03_data['CTDSAL'], GA03_data['NITRATE_LL_D_CONC_BOTTLE [umol/kg]'],
-        GA03_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GA03_data['PRESSURE [dbar]']]
-'''
 data = [GA03_data['Station'], GA03_data['yyyy-mm-ddThh:mm:ss.sss'], GA03_data['Latitude [degrees_north]'], GA03_data['Longitude [degrees_east]'],
         GA03_data['DEPTH [m]'], GA03_data['CTDTMP [deg C]'], GA03_data['CTDSAL'], GA03_data['NITRATE_D_CONC_BOTTLE [umol/kg]'],
         GA03_data['Fe_D_CONC_BOTTLE [nmol/kg]'], GA03_data['PRESSURE [dbar]']]
@@ -213,6 +189,9 @@ add_ratio_data(GIPY04)
 add_density_data(GIPY04)
 GIPY04 = remove_empty_data(GIPY04)
 GIPY04 = GIPY04[(GIPY04.Depth <= 500)]
+#remove specific noisy data
+indexes = GIPY04[(GIPY04.Station == '18 (Super 1)') & ((GIPY04.Depth == 78.6) | (GIPY04.Depth == 98.6) | (GIPY04.Depth == 149.8) | (GIPY04.Depth == 172.8))].index
+GIPY04.drop(indexes, inplace=True)
 GIPY04['Date'] = GIPY04.Date.str.split('T').str[0]
 
 positions = []

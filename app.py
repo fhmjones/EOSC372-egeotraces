@@ -196,6 +196,8 @@ app.layout = html.Div(
         dcc.Markdown(
             """
             *Density, Sigma0, is potential density anomaly, or potential density minus 1000 kg/m\u00B3. [Reference](http://www.teos-10.org/pubs/gsw/html/gsw_sigma0.html).
+            
+            **The Nitrate/Iron data was calculated from interpolated values of Nitrate and the exact values of Iron.
             """
         ),
         dcc.Markdown(

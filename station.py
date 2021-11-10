@@ -1,12 +1,12 @@
 colours = [
-    "darkred",
-    "limegreen",
     "red",
-    "sienna",
-    "darkorange",
-    "darkgreen",
     "darkviolet",
+    "limegreen",
+    "darkred",
+    "darkorange",
     "deeppink",
+    "darkgreen",
+    "cyan",
 ]
 
 
