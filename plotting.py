@@ -403,7 +403,7 @@ def plot_stations(cruise, click_stations):
                     showlegend=False,
                     hovertemplate="<b>"
                     + str(click_stations[i]["name"])
-                    + "</b><br>lat:%{lat} </br> lon:%{lon}</br> date:"
+                    + "</b><br>lat: %{lat}</br>lon: %{lon}</br>date: "
                     + str(click_stations[i]["date"])
                     + "<extra></extra>",
                     mode="markers",
